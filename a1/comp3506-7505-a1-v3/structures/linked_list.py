@@ -49,15 +49,30 @@ class DoublyLinkedList:
     """
 
     def __init__(self) -> None:
-        # You probably need to track some data here...
-        pass
+        self._head = None #initially no head
+        self._tail = None #initally no tail 
+        self._size = 0 # initially no size
 
     def __str__(self) -> str:
         """
         A helper that allows you to print a DoublyLinkedList type
         via the str() method.
         """
-        pass
+
+        current_data = self._head  
+
+        if self._size == 0: 
+            return "List is empty"
+        
+        node_string_rep = ""
+
+        while current_data is not None:
+            node_string_rep += str(current_data.get_data())
+            if current_data.get_next() is not None:
+                node_string_rep += " <-> "
+            current_data = current_data.get_next()
+
+        return node_string_rep
 
     """
     Simple Getters and Setters below
@@ -68,14 +83,19 @@ class DoublyLinkedList:
         Return the size of the list.
         Time complexity for full marks: O(1)
         """
-        pass
+        return self._size
 
     def get_head(self) -> Any | None:
         """
         Return the data of the leftmost node in the list, if it exists.
         Time complexity for full marks: O(1)
         """
-        pass
+
+        if self._head is None:
+            return None
+        else:
+            return self._head.get_data()
+        
 
     def set_head(self, data: Any) -> None:
         """
@@ -83,14 +103,24 @@ class DoublyLinkedList:
         If the list is empty, do nothing.
         Time complexity for full marks: O(1)
         """
-        pass
+
+        if self._head is None:
+            return 
+
+        self._head.set_data(data)
+        
 
     def get_tail(self) -> Any | None:
         """
         Return the data of the rightmost node in the list, if it exists.
         Time complexity for full marks: O(1)
         """
-        pass
+
+        if self._tail is None:
+            return None
+        else:
+            return self._tail.get_data()
+        
 
     def set_tail(self, data: Any) -> None:
         """
@@ -98,7 +128,10 @@ class DoublyLinkedList:
         If the list is empty, do nothing.
         Time complexity for full marks: O(1)
         """
-        pass
+
+        if self._tail is None:
+            return
+        self._tail.set_data(data)
 
     """
     More interesting functionality now.
