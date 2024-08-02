@@ -158,14 +158,43 @@ class DoublyLinkedList:
         Remove the front node, and return the data it holds.
         Time complexity for full marks: O(1)
         """
-        pass
+
+        if self._size == 0:
+            return None
+        
+        head_data_to_remove = self._head.get_data() 
+        new_head = self._head.get_next()
+
+        if new_head is not None: #since "get rid" of head, new head not pointing to anything previously
+            new_head.set_prev(None)
+        else: 
+            self._tail = None #if one element in list and removed, both head and tail not pointing to anything
+
+        self._head = new_head #set the head to the new head
+        self._size -= 1 #if you remove something, list decreases 
+        return head_data_to_remove
+        
 
     def remove_from_back(self) -> Any | None:
         """
         Remove the back node, and return the data it holds.
         Time complexity for full marks: O(1)
         """
-        pass
+
+        if self._size == 0:
+            return None
+        
+        tail_data_to_remove = self._tail.get_data()
+        new_tail = self._tail.get_prev()
+
+        if new_tail is not None:
+            new_tail.set_next(None)
+        else: 
+            self._head = None 
+        
+        self._tail = new_tail
+        self._size -= 1
+        return tail_data_to_remove
 
     def find_element(self, elem: Any) -> bool:
         """
