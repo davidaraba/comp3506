@@ -1,7 +1,10 @@
-
-#ignore test files 
-
+# Ignore test files
 comp3506-7505-a1-v3/test_structures.py
 comp3506-7505-a1-v3/test_kmers.py
 comp3506-7505-a1-v3/test_warmup.py
 
+# Ignore Python compiled files
+*.pyc
+
+# Ignore __pycache__ directories
+__pycache__/
