@@ -131,6 +131,7 @@ class DoublyLinkedList:
 
         if self._tail is None:
             return
+        
         self._tail.set_data(data)
 
     """
@@ -180,8 +181,6 @@ class DoublyLinkedList:
         self._tail = new_tail_node
         self._size += 1 
 
-
-        pass
 
     def remove_from_front(self) -> Any | None:
         """
@@ -254,13 +253,28 @@ class DoublyLinkedList:
         Time complexity for full marks: O(N)
         """
 
-        if not self.find_element(elem):
+        current_node = self._head
+
+        if self._size == 0 or not self.find_element(elem):
             return False
         
-        
-
-
-        self._size -= 1 
+        while current_node is not None:
+            if current_node.get_data() == elem:
+                if current_node._prev is not None:
+                    current_node._prev._next = current_node._next
+                else:
+                    self._head = current_node._next
+                
+                if current_node._next is not None:
+                    current_node._next._prev = current_node._prev
+                else:
+                    self._tail = current_node._next
+                self._size -= 1 
+                return True
+            
+            current_node = current_node.get_next()
+    
+        return False
 
     def reverse(self) -> None:
         """
