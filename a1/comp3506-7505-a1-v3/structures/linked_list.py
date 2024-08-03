@@ -144,13 +144,43 @@ class DoublyLinkedList:
         the given data.
         Time complexity for full marks: O(1)
         """
-        pass
+        
+        new_head_node = Node(data)
+
+        if self._size == 0:
+            self._head = new_head_node
+            self._tail = new_head_node
+            self._size += 1
+            return
+        
+        intial_head = self._head
+        intial_head.set_prev(new_head_node)
+        new_head_node.set_next(intial_head)
+        self._head = new_head_node
+        self._size += 1
+        
 
     def insert_to_back(self, data: Any) -> None:
         """
         Insert the given data (in a node) to the back of the list
         Time complexity for full marks: O(1)
         """
+
+        new_tail_node = Node(data)
+
+        if self._size == 0:
+            self._head = new_tail_node
+            self._tail = new_tail_node
+            self._size += 1
+            return
+        
+        intial_tail = self._tail 
+        intial_tail.set_next(new_tail_node)
+        new_tail_node.set_prev(intial_tail)
+        self._tail = new_tail_node
+        self._size += 1 
+
+
         pass
 
     def remove_from_front(self) -> Any | None:
@@ -202,7 +232,19 @@ class DoublyLinkedList:
         if a match is found; False otherwise.
         Time complexity for full marks: O(N)
         """
-        pass
+        if self._size == 0:
+            return False
+        
+        current_node = self._head
+
+        while current_node is not None:
+            if current_node.get_data() == elem:
+                return True
+            current_node = current_node.get_next()
+
+        return False
+
+        
 
     def find_and_remove_element(self, elem: Any) -> bool:
         """
@@ -211,11 +253,26 @@ class DoublyLinkedList:
         False is returned if no match is found.
         Time complexity for full marks: O(N)
         """
-        pass
+
+        if not self.find_element(elem):
+            return False
+        
+        
+
+
+        self._size -= 1 
 
     def reverse(self) -> None:
         """
         Reverses the linked list
         Time complexity for full marks: O(1)
         """
-        pass
+
+        current_node = self._head
+
+        while current_node is not None:
+            current_node._prev, current_node._next = current_node._next, current_node._prev
+            current_node = current_node._prev
+        
+        self._head, self._tail = self._tail, self._head
+
