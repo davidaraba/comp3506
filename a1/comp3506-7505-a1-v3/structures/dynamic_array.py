@@ -12,6 +12,7 @@ class DynamicArray:
         self._size = 0
         self._capacity = 1
         self._data = [None] * self._capacity 
+        self._reversed = False
 
     def __str__(self) -> str:
         """
@@ -111,7 +112,10 @@ class DynamicArray:
         Reverse the array.
         Time complexity for full marks: O(1)
         """
-        pass
+        self._reversed = True
+            
+        # for i in range(self._size // 2):
+        #     self._data[i], self._data[self._size - 1 - i] = self._data[self._size - 1 - i], self._data[i]
 
     def remove(self, element: Any) -> None:
         """
@@ -119,18 +123,22 @@ class DynamicArray:
         If there is no such element, leave the array unchanged.
         Time complexity for full marks: O(N)
         """
-        # if self._size == 0:
-        #     return None
-        
-        # index = -1
-        # for i in range(self._size):
-        #     if self._data[i] == element:
-        #         index = i
-        #         break
 
-    
+        # Find the index of the element to remove
+        index = -1
+        for i in range(self._size):
+            if self._data[i] == element:
+                index = i
+                break
 
-    
+        # If the element was found, remove it
+        if index != -1:
+            for i in range(index, self._size - 1):
+                self._data[i] = self._data[i + 1]
+            
+            # self._data[self._size - 1] = None
+            self._size -= 1
+            
                         
     def remove_at(self, index: int) -> Any | None:
         """
@@ -138,7 +146,20 @@ class DynamicArray:
         If there is no such element, leave the array unchanged and return None.
         Time complexity for full marks: O(N)
         """
-        pass
+        if self._size == 0 or index < 0 or index >= self._size:
+            return None
+        
+        # removed_element = self.get_at(index)
+        removed_element = self._data[index]
+
+        for i in range(index, self._size - 1):
+            self._data[i] = self._data[i + 1]
+
+        # self._data[self._size - 1] = None                 
+        self._size -= 1
+        return removed_element
+        
+
 
     def is_empty(self) -> bool:
         """
