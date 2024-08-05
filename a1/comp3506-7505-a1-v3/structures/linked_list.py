@@ -276,6 +276,7 @@ class DoublyLinkedList:
     
         return False
 
+    ###################################################################################################################
     def reverse(self) -> None:
         """
         Reverses the linked list
@@ -289,4 +290,6 @@ class DoublyLinkedList:
             current_node = current_node._prev
         
         self._head, self._tail = self._tail, self._head
+
+        ###################################################################################################################
 
