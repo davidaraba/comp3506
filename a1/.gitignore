@@ -7,4 +7,5 @@ comp3506-7505-a1-v3/test_warmup.py
 *.pyc
 
 # Ignore __pycache__ directories
-__pycache__/
+**/__pycache__/
+
