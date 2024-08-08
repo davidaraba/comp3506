@@ -160,7 +160,6 @@ class DynamicArray:
         return removed_element
         
 
-
     def is_empty(self) -> bool:
         """
         Boolean helper to tell us if the structure is empty or not
@@ -194,4 +193,49 @@ class DynamicArray:
         Sort elements inside _data based on < comparisons.
         Time complexity for full marks: O(NlogN)
         """
-        pass
+        if self._size > 1:
+            self.__merge_sort(0, self._size)
+
+    def __merge_sort(self, left: int, right: int) -> None:
+
+        if right - left > 1:
+            middle = (left + right) // 2
+            self.__merge_sort(left, middle)
+            self.__merge_sort(middle, right)
+            self.__merge(left, middle, right)
+
+    def __merge(self, left: int, middle: int, right: int) -> None:
+        left_length = middle - left
+        right_length = right - middle
+
+        left_array = [None] * left_length
+        right_array = [None] * right_length
+
+        for i in range(left_length):
+            left_array[i] = self._data[left + i]
+
+        for j in range(right_length):
+            right_array[j] = self._data[middle + j]
+
+        l = r = 0 
+        a = left 
+
+        while l < left_length and r < right_length:
+            if left_array[l] <= right_array[r]:
+                self._data[a] = left_array[l]
+                l += 1
+            else:
+                self._data[a] = right_array[r]
+                r+= 1
+            a += 1
+
+        while l < left_length:
+            self._data[a] = left_array[l]
+            a += 1
+            l += 1
+
+        while r < right_length:
+            self._data[a] = right_array[r]
+            a += 1
+            r += 1 
+
