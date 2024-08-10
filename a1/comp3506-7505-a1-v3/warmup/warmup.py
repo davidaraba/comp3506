@@ -56,8 +56,16 @@ def main_character(instring: list[int]) -> int:
     main_character([60000, 120000, 654321, 999, 1337, 133731337]) == -1
     """
 
+    # get size of array -> size = list.get_size()
+    # character to search for would be the first element in array so searching_for = list[0]
+    # would need to loop through the array with for loop for i in range(size)
+    # if i == searching_for:
+    #       return the position we found it at (return i??)
+    # else:
+    #       return - 1
 
 def missing_odds(inputs: list[int]) -> int:
+# def missing_odds(inputs: DynamicArray) -> int:
     """
     @inputs@ is an unordered array of distinct integers.
     If @a@ is the smallest number in the array and @b@ is the biggest,
@@ -83,8 +91,23 @@ def missing_odds(inputs: list[int]) -> int:
     missing_odds([4, 1, 8, 5]) == 10    # 3 and 7 are missing
     """
 
-    # YOUR CODE GOES HERE
-    pass
+    inputs_array = DynamicArray()
+
+    for num in inputs:
+        inputs_array.append(num)
+    
+    inputs_array.sort()
+
+    min_bound = inputs_array.get_at(0)
+    max_bound = inputs_array.get_at(inputs_array.get_size() - 1)
+    missing_odds_sum = 0 # Variable to accumulate sum 
+
+    for i in range(min_bound, max_bound + 1):
+        if i % 2 != 0 and i not in inputs_array: # If number % 2 not 0, means odd / ensure odd number not one of bounds
+            missing_odds_sum += i # If odd, add to sum variable
+
+    return missing_odds_sum #Return final result 
+
 
 
 def k_cool(k: int, n: int) -> int:
