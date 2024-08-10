@@ -25,13 +25,14 @@ class DynamicArray:
         array_str = "["
 
         for x in range(self._size):
-            current_data = self.get_at(x)
-            array_str += str(current_data)
+            array_str += str(self.get_at(x))
             if x < self._size - 1:
                 array_str += ", "
 
         return array_str + "]"
-    
+
+        # return str([self.get_at(x) for x in range(self._size)])
+
     def __resize(self) -> str:
         self._capacity *= 2
         new_array = [None] * self._capacity
@@ -47,7 +48,7 @@ class DynamicArray:
         Return None if index is out of bounds.
         Time complexity for full marks: O(1)
         """
-        if index < 0 or index >= self._capacity:
+        if index < 0 or index >= self._size:
             return None
         else: 
             return self._data[index]
@@ -73,8 +74,6 @@ class DynamicArray:
         else:
             self._data[index] = element
         
-        
-
     def __setitem__(self, index: int, element: Any) -> None:
         """
         Same as set_at.
@@ -114,9 +113,6 @@ class DynamicArray:
         """
         self._reversed = True
             
-        # for i in range(self._size // 2):
-        #     self._data[i], self._data[self._size - 1 - i] = self._data[self._size - 1 - i], self._data[i]
-
     def remove(self, element: Any) -> None:
         """
         Remove the first occurrence of the element from the array.
