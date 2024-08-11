@@ -21,17 +21,11 @@ class DynamicArray:
         """
         if self._size == 0:
             return "Array is empty" 
-        
-        array_str = "["
-
-        for x in range(self._size):
-            array_str += str(self.get_at(x))
-            if x < self._size - 1:
-                array_str += ", "
-
-        return array_str + "]"
-
-        # return str([self.get_at(x) for x in range(self._size)])
+    
+        if self._reversed:
+            return str([self._data[self._size - 1 - x] for x in range(self._size)])
+        else:
+            return str([self._data[x] for x in range(self._size)])
 
     def __resize(self) -> str:
         self._capacity *= 2
@@ -50,18 +44,18 @@ class DynamicArray:
         """
         if index < 0 or index >= self._size:
             return None
-        else: 
-            return self._data[index]
+        
+        if self._reversed:
+            index = self._size - index - 1
+
+        return self._data[index]
 
     def __getitem__(self, index: int) -> Any | None:
         """
         Same as get_at.
         Allows to use square brackets to index elements.
         """
-        if index < 0 or index >= self._capacity:
-            return None
-        else:
-            return self.get_at(index)
+        return self.get_at(index) 
 
     def set_at(self, index: int, element: Any) -> None:
         """
@@ -71,8 +65,11 @@ class DynamicArray:
         """
         if index >= self._capacity:
             return None 
-        else:
-            self._data[index] = element
+        
+        if self._reversed:
+            index = self._size - index - 1
+        
+        self._data[index] = element
         
     def __setitem__(self, index: int, element: Any) -> None:
         """
@@ -111,7 +108,7 @@ class DynamicArray:
         Reverse the array.
         Time complexity for full marks: O(1)
         """
-        self._reversed = True
+        self._reversed = not self._reversed
             
     def remove(self, element: Any) -> None:
         """
@@ -123,7 +120,7 @@ class DynamicArray:
         # Find the index of the element to remove
         index = -1
         for i in range(self._size):
-            if self._data[i] == element:
+            if self.get_at(i) == element:
                 index = i
                 break
 
@@ -132,7 +129,6 @@ class DynamicArray:
             for i in range(index, self._size - 1):
                 self._data[i] = self._data[i + 1]
             
-            # self._data[self._size - 1] = None
             self._size -= 1
             
                         
@@ -145,13 +141,11 @@ class DynamicArray:
         if self._size == 0 or index < 0 or index >= self._size:
             return None
         
-        # removed_element = self.get_at(index)
-        removed_element = self._data[index]
+        removed_element = self.get_at(index)
 
         for i in range(index, self._size - 1):
             self._data[i] = self._data[i + 1]
 
-        # self._data[self._size - 1] = None                 
         self._size -= 1
         return removed_element
         
@@ -234,4 +228,3 @@ class DynamicArray:
             self._data[a] = right_array[r]
             a += 1
             r += 1 
-
