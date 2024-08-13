@@ -144,12 +144,12 @@ class BitVector:
         Time complexity for full marks: O(N)
         """
 
-        for i in range(self._data):
-            if dist > 0:
-                self._data[i] << dist
-                self._data[i] * 2 ^ dist 
-            else:
-                self._data[i] >> dist 
+        # for i in range(self._data):
+        #     if dist > 0:
+        #         self._data[i] << dist
+        #         self._data[i] * 2 ^ dist 
+        #     else:
+        #         self._data[i] >> dist 
 
     def rotate(self, dist: int) -> None:
         """

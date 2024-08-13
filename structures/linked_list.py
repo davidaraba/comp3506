@@ -235,8 +235,11 @@ class DoublyLinkedList:
             new_head = self._head.get_next()
 
         if new_head is not None: #since "get rid" of head, new head not pointing to anything previously
-            new_head.set_prev(None)
-        else: 
+            if self._reversed:
+                new_head.set_next(None)
+            else: 
+                new_head.set_prev(None)
+        else:
             self._tail = None #if one element in list and removed, both head and tail not pointing to anything
 
         self._head = new_head #set the head to the new head
@@ -255,14 +258,17 @@ class DoublyLinkedList:
         
         if self._reversed:
             tail_data_to_remove = self._head.get_data()
-            new_tail = self._head.get_prev()
-        
+            new_tail = self._head.get_next()   
         else:
             tail_data_to_remove = self._tail.get_data()
             new_tail = self._tail.get_prev()
 
         if new_tail is not None:
-            new_tail.set_next(None)
+            if self._reversed:
+                new_tail.set_prev(None)
+            else:
+                new_tail.set_next(None)
+                pass
         else: 
             self._head = None 
         

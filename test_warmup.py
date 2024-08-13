@@ -35,6 +35,16 @@ def test_missing_odds():
     A simple set of tests for the missing odds problem.
     This is not marked and is just here for you to test your code.
     """
+
+    # exhaustive_inputs = random.sample(range(10**6), 300000)
+    # result_exhaustive = missing_odds(exhaustive_inputs)
+    # print(f"Exhaustive Test Result: {result_exhaustive}")
+
+    comp3506_inputs = random.sample(range(10**16), 5000000)
+    result_comp3506 = missing_odds(comp3506_inputs)
+    print(f"COMP3506 Test Result: {result_comp3506}")
+
+
    
 def test_k_cool():
     """
@@ -49,8 +59,7 @@ def test_number_game():
     """
 
     # x = number_game([2, 2, 2, 2])
-    x = number_game([3, 2, 1, 0]) 
-    print(x)
+    # x = number_game([3, 2, 1, 0]) 
 
 def test_road_illumination():
     """

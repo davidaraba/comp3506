@@ -65,7 +65,6 @@ def main_character(instring: list[int]) -> int:
     #       return - 1
 
 def missing_odds(inputs: list[int]) -> int:
-# def missing_odds(inputs: DynamicArray) -> int:
     """
     @inputs@ is an unordered array of distinct integers.
     If @a@ is the smallest number in the array and @b@ is the biggest,
@@ -91,24 +90,27 @@ def missing_odds(inputs: list[int]) -> int:
     missing_odds([4, 1, 8, 5]) == 10    # 3 and 7 are missing
     """
 
-    inputs_array = DynamicArray()
+    min_bound = inputs[0]
+    max_bound = inputs[0]
 
     for num in inputs:
-        inputs_array.append(num)
+        if num < min_bound:
+            min_bound = num
+        if num > max_bound:
+            max_bound = num
+
+    presence = [0] * (max_bound + 1)
+
+    for num in inputs:
+        presence[num] = 1
     
-    inputs_array.sort()
+    missing_odds_sum = 0
 
-    min_bound = inputs_array.get_at(0)
-    max_bound = inputs_array.get_at(inputs_array.get_size() - 1)
-    missing_odds_sum = 0 # Variable to accumulate sum 
-
-    for i in range(min_bound, max_bound + 1):
-        if i % 2 != 0 and i not in inputs_array: # If number % 2 not 0, means odd / ensure odd number not one of bounds
-            missing_odds_sum += i # If odd, add to sum variable
-
-    return missing_odds_sum #Return final result 
-
-
+    for i in range(min_bound, max_bound):
+        if i % 2 != 0 and presence[i] == 0:
+            missing_odds_sum += i
+    
+    return missing_odds_sum
 
 def k_cool(k: int, n: int) -> int:
     """
@@ -179,7 +181,6 @@ def number_game(numbers: list[int]) -> tuple[str, int]:
 
     alice_score = bob_score = 0
     
-        
     if alice_score > bob_score:
         return ("Alice", alice_score)
     elif bob_score > alice_score:

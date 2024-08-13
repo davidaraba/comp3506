@@ -117,11 +117,12 @@ def test_reverse():
     linked_list.insert_to_back(2)
     linked_list.insert_to_back(1)
 
-    print(str(linked_list))
+    print("normal is: " + str(linked_list))
+    print("normal head is: " + str(linked_list.get_head()))
 
     linked_list.reverse()
-
-    print(str(linked_list))
+    print("reverse is: " + str(linked_list))
+    print("reverse head is: " + str(linked_list.get_head()))
 
 def test_dynamic_array():
     """
