@@ -34,6 +34,7 @@ class BitVector:
         """
         # need to convert each element (64 bits) to decimal form 
         # return str(self._data[x] for x in range(self.get_size() / BitVector.BITS_PER_ELEMENT))
+        #if revesed, print other way
 
     def __resize(self) -> None:
         pass
@@ -143,6 +144,13 @@ class BitVector:
         Time complexity for full marks: O(N)
         """
 
+        for i in range(self._data):
+            if dist > 0:
+                self._data[i] << dist
+                self._data[i] * 2 ^ dist 
+            else:
+                self._data[i] >> dist 
+
     def rotate(self, dist: int) -> None:
         """
         Make a bit rotation.
@@ -150,6 +158,12 @@ class BitVector:
         Otherwise perform a right rotation by `dist`.
         Time complexity for full marks: O(N)
         """
+
+        for i in range(self._data[i]):
+            if dist > 0:
+                pass
+            else:
+                pass
 
     def get_size(self) -> int:
         """

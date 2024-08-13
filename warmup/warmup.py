@@ -177,9 +177,15 @@ def number_game(numbers: list[int]) -> tuple[str, int]:
     So, nobody picks any numbers to increase their score, which results in a Tie with both players having scores of 0.
     """
 
-    # YOUR CODE GOES HERE
-    pass
-
+    alice_score = bob_score = 0
+    
+        
+    if alice_score > bob_score:
+        return ("Alice", alice_score)
+    elif bob_score > alice_score:
+        return ("Bob", bob_score)
+    else:
+        return ("Tie", alice_score)
 
 def road_illumination(road_length: int, poles: list[int]) -> float:
     """

@@ -229,7 +229,7 @@ class DoublyLinkedList:
        
         if self._reversed:
             head_data_to_remove = self._tail.get_data() 
-            new_head = self._tail.get_next()
+            new_head = self._tail.get_prev() # get_prev()
         else:
             head_data_to_remove = self._head.get_data() 
             new_head = self._head.get_next()
