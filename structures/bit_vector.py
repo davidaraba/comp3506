@@ -29,45 +29,17 @@ class BitVector:
         self._reverse = False
 
     def __str__(self) -> str:
-        """
-        A helper that allows you to print a BitVector type
-        via the str() method.
-        """
+        bit_string = ""
 
-        bit_list = ""
+        for i in range(self._data.get_size()):
+            current_element = self._data[i]
 
-        for i in range (self._data.get_size()):
-            bit_list += self.__dec_to_binary(self._data.get_at(i))
-            # bit_list += str(self.get_at(i))
-        
-        return bit_list
-        
-    def __dec_to_binary(self, number: int) -> str:
-        binary_str = ''
-        count = 0
+            for bit_position in range(BitVector.BITS_PER_ELEMENT - 1, -1, -1):
+                bit_value = (current_element >> bit_position) & 1
+                bit_value ^= self._flip  # Flip the bit if necessary
+                bit_string += str(bit_value)
 
-        if number == 0:
-             binary_str = "0"
-             count = 1
-        else:
-            while number > 0:
-                r = number % 2
-                binary_str += str(r)
-                count += 1
-                number = number // 2
-                
-      
-        reversed_binary_str = ""
-        for i in range(count - 1, -1, -1):
-            reversed_binary_str += binary_str[i]
-
-        padding_needed = 64 - count
-        padded_binary = ""
-
-        for _ in range(padding_needed):
-            padded_binary += '0'
-    
-        return padded_binary + reversed_binary_str
+        return bit_string
 
     def __resize(self) -> None:
         new_capacity = self._data.get_size() * 2
@@ -90,10 +62,15 @@ class BitVector:
         """
         if index < 0 or index >= self.get_size():
             return None
+        
+        if self._reverse:
+            index = self._data.get_size() - index - 1
+        
         element_index = index // BitVector.BITS_PER_ELEMENT
         bit_position = index % BitVector.BITS_PER_ELEMENT
         
-        return (self._data[element_index] >> bit_position) & 1
+        bit_value = (self._data[element_index] >> bit_position) & 1
+        return bit_value ^ self._flip  # XOR with flip to invert the bit if necessary
 
     def __getitem__(self, index: int) -> int | None:
         """
@@ -110,6 +87,10 @@ class BitVector:
         """
         if index < 0 or index >= self.get_size():
             return None
+        
+        if self._reverse:
+            index = self._data.get_size() - index - 1
+
         element_index = index // BitVector.BITS_PER_ELEMENT
         bit_position = index % BitVector.BITS_PER_ELEMENT
 
@@ -280,22 +261,30 @@ class BitVector:
 
         self._data[0] |= carry_over
     
+    def __right_rotate(self, right_rot: int) -> None:
+        right_rot = -right_rot % BitVector.BITS_PER_ELEMENT
 
-    # def __right_rotate(self, right_rot: int) -> None:
-    #     right_rot = right_rot % BitVector.BITS_PER_ELEMENT
+        if right_rot == 0:
+            return
 
-    #     carry_over = 0
+        carry_over = 0
 
-    #     for i in range(self._data.get_size() - 1, -1, -1):
-    #         current_chunk = self._data[i]
-            
-    #         new_carry_over = current_chunk & ((1 << right_rot) - 1)
+        # Start from the last element and rotate towards the first
+        for i in range(self._data.get_size() - 1, -1, -1):
+            current_chunk = self._data[i]
 
-    #         self._data[i] = ((current_chunk >> right_rot) & ((1 << BitVector.BITS_PER_ELEMENT) - 1)) | carry_over
+            # Capture the bits that will wrap around to the left of the next element
+            new_carry_over = current_chunk & ((1 << right_rot) - 1)
 
-    #         carry_over = new_carry_over
+            # Perform the rotation on the current chunk and add the carry over from the previous chunk
+            self._data[i] = (current_chunk >> right_rot) | (carry_over << (BitVector.BITS_PER_ELEMENT - right_rot))
 
-    #     self._data[0] |= carry_over
+            # Update carry_over for the next iteration
+            carry_over = new_carry_over
+
+        # Handle the wrap-around carry-over for the last element
+        self._data[self._data.get_size() - 1] |= (carry_over << (BitVector.BITS_PER_ELEMENT - right_rot))
+
 
     def get_size(self) -> int:
         """
