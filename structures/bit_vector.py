@@ -23,6 +23,7 @@ class BitVector:
         We will use the dynamic array as our data storage mechanism
         """
         self._data = DynamicArray()
+        self._data.append(0)
         self._num_bits = 0 
         self._flip = False
         self._reverse = False
@@ -32,12 +33,54 @@ class BitVector:
         A helper that allows you to print a BitVector type
         via the str() method.
         """
-        # need to convert each element (64 bits) to decimal form 
-        # return str(self._data[x] for x in range(self.get_size() / BitVector.BITS_PER_ELEMENT))
-        #if revesed, print other way
+
+        bit_list = ""
+
+        for i in range (self._data.get_size()):
+            bit_list += self.__dec_to_binary(self._data.get_at(i))
+            # bit_list += str(self.get_at(i))
+        
+        return bit_list
+        
+    def __dec_to_binary(self, number: int) -> str:
+        binary_str = ''
+        count = 0
+
+        if number == 0:
+             binary_str = "0"
+             count = 1
+        else:
+            while number > 0:
+                r = number % 2
+                binary_str += str(r)
+                count += 1
+                number = number // 2
+                
+      
+        reversed_binary_str = ""
+        for i in range(count - 1, -1, -1):
+            reversed_binary_str += binary_str[i]
+
+        padding_needed = 64 - count
+        padded_binary = ""
+
+        for _ in range(padding_needed):
+            padded_binary += '0'
+    
+        return padded_binary + reversed_binary_str
 
     def __resize(self) -> None:
-        pass
+        new_capacity = self._data.get_size() * 2
+
+        new_bit_vector = DynamicArray()
+
+        for _ in range(new_capacity):
+            new_bit_vector.append(0)
+        
+        for j in range(self._data.get_size()):
+            new_bit_vector[j] = self._data[j]
+        
+        self._data = new_bit_vector
 
     def get_at(self, index: int) -> int | None:
         """
@@ -46,8 +89,7 @@ class BitVector:
         Time complexity for full marks: O(1)
         """
         if index < 0 or index >= self.get_size():
-            return 
-        
+            return None
         element_index = index // BitVector.BITS_PER_ELEMENT
         bit_position = index % BitVector.BITS_PER_ELEMENT
         
@@ -66,14 +108,13 @@ class BitVector:
         Do not modify the vector if the index is out of bounds.
         Time complexity for full marks: O(1)
         """
-        if index < 0 or index > self._data.get_size():
-            return 
-        
+        if index < 0 or index >= self.get_size():
+            return None
         element_index = index // BitVector.BITS_PER_ELEMENT
         bit_position = index % BitVector.BITS_PER_ELEMENT
 
         if self._flip:
-            self._data[element_index] &= ~ (1 << bit_position)
+            self._data[element_index] &= ~(1 << bit_position)
         else:
             self._data[element_index] |= (1 << bit_position)
 
@@ -83,7 +124,7 @@ class BitVector:
         Do not modify the vector if the index is out of bounds.
         Time complexity for full marks: O(1)
         """
-        if index < 0 or index > self._data.get_size():
+        if index < 0 or index > self._num_bits:
             return 
         
         element_index = index // BitVector.BITS_PER_ELEMENT
@@ -102,7 +143,17 @@ class BitVector:
         Do not modify the vector if the index is out of bounds.
         Time complexity for full marks: O(1)
         """
-        pass
+
+        if index < 0 or index >= self._num_bits:
+            return
+        
+        element_index = index // BitVector.BITS_PER_ELEMENT
+        bit_position = index % BitVector.BITS_PER_ELEMENT
+        
+        if state == 0:
+            self._data[element_index] &= ~ (1 << bit_position)
+        else:
+            self.set_at(index)
 
     def append(self, state: int) -> None:
         """
@@ -111,7 +162,18 @@ class BitVector:
         if state is 0, set the bit to 0, otherwise set the bit to 1.
         Time complexity for full marks: O(1*)
         """
-        pass
+       
+        element_index = self._num_bits // BitVector.BITS_PER_ELEMENT
+        bit_position = self._num_bits % BitVector.BITS_PER_ELEMENT
+
+        if element_index >= self._data.get_size():
+            self.__resize()
+        
+        if state != 0:
+            self._data[element_index] |= (1 << bit_position)
+        
+        self._num_bits += 1
+
 
     def prepend(self, state: Any) -> None:
         """
@@ -120,7 +182,8 @@ class BitVector:
         if state is 0, set the bit to 0, otherwise set the bit to 1.
         Time complexity for full marks: O(1*)
         """
-        pass
+
+        self._num_bits += 1
 
     def reverse(self) -> None:
         """
@@ -144,12 +207,46 @@ class BitVector:
         Time complexity for full marks: O(N)
         """
 
-        # for i in range(self._data):
-        #     if dist > 0:
-        #         self._data[i] << dist
-        #         self._data[i] * 2 ^ dist 
-        #     else:
-        #         self._data[i] >> dist 
+        if dist == 0 :
+            return
+        
+        if dist > 0:
+            self.__left_shift(dist)
+        else:
+            self.__right_shift(dist)
+
+       
+    def __left_shift(self, left_dist: int) -> None:
+        full_shifts = left_dist // BitVector.BITS_PER_ELEMENT
+        bit_shifts = left_dist % BitVector.BITS_PER_ELEMENT
+
+        for i in range(self._data.get_size() -1, -1, -1):
+            if i - full_shifts >= 0:
+                self._data[i] = (self._data[i - full_shifts] << bit_shifts) & \
+                    ((1 << BitVector.BITS_PER_ELEMENT) - 1) # accessing the block full_shifts before i 
+
+                if i - full_shifts - 1 >= 0 and bit_shifts > 0:
+                    carry =  (self._data[i - full_shifts - 1] >> \
+                            (BitVector.BITS_PER_ELEMENT - bit_shifts))
+                    self._data[i] |= carry
+            else:
+                self._data[i] = 0
+    
+    def __right_shift(self, right_dist: int) -> None:
+        right_dist = - right_dist
+        full_shifts = right_dist // BitVector.BITS_PER_ELEMENT
+        bit_shifts = right_dist % BitVector.BITS_PER_ELEMENT
+
+        for i in range(self._data.get_size()):
+            if i + full_shifts  < self._data.get_size():
+                self._data[i] = (self._data[i + full_shifts] >> bit_shifts) 
+
+                if i + full_shifts + 1 < self._data.get_size() and bit_shifts > 0:
+                    carry = (self._data[i + full_shifts + 1] << (BitVector.BITS_PER_ELEMENT - bit_shifts)) \
+                        & ((1 << BitVector.BITS_PER_ELEMENT) - 1)
+                    self._data[i] |= carry
+            else:
+                self._data[i] = 0
 
     def rotate(self, dist: int) -> None:
         """
@@ -159,15 +256,50 @@ class BitVector:
         Time complexity for full marks: O(N)
         """
 
-        for i in range(self._data[i]):
-            if dist > 0:
-                pass
-            else:
-                pass
+        if dist == 0:
+            return None
+        
+        if dist > 0:
+            self.__left_rotate(dist)
+        else:
+            self.__right_rotate(dist)
+
+    def __left_rotate(self, left_rot: int) -> None:
+        left_rot = left_rot % BitVector.BITS_PER_ELEMENT
+
+        carry_over = 0
+        
+        for i in range(self._data.get_size()):
+            current_chunk = self._data[i]
+
+            new_carry_over = current_chunk >> (BitVector.BITS_PER_ELEMENT - left_rot)
+
+            self._data[i] = ((current_chunk << left_rot) & ((1 << BitVector.BITS_PER_ELEMENT) - 1)) | carry_over
+
+            carry_over = new_carry_over
+
+        self._data[0] |= carry_over
+    
+
+    # def __right_rotate(self, right_rot: int) -> None:
+    #     right_rot = right_rot % BitVector.BITS_PER_ELEMENT
+
+    #     carry_over = 0
+
+    #     for i in range(self._data.get_size() - 1, -1, -1):
+    #         current_chunk = self._data[i]
+            
+    #         new_carry_over = current_chunk & ((1 << right_rot) - 1)
+
+    #         self._data[i] = ((current_chunk >> right_rot) & ((1 << BitVector.BITS_PER_ELEMENT) - 1)) | carry_over
+
+    #         carry_over = new_carry_over
+
+    #     self._data[0] |= carry_over
 
     def get_size(self) -> int:
         """
         Return the number of *bits* in the list
         Time complexity for full marks: O(1)
         """
-        return self._data.get_size() * BitVector.BITS_PER_ELEMENT
+        return self._num_bits
