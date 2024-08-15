@@ -323,5 +323,5 @@ class DoublyLinkedList:
         Time complexity for full marks: O(1)
         """
 
-        self._reversed = True
+        self._reversed = not self._reversed
 
