@@ -101,13 +101,10 @@ class DoublyLinkedList:
         Time complexity for full marks: O(1)
         """
 
-        if self._head is None:
+        if self._size == 0:
             return None
         
-        if self._reversed:
-            return self._tail.get_data()
-        else:
-            return self._head.get_data()
+        return self._tail.get_data() if self._reversed else self._head.get_data()
         
 
     def set_head(self, data: Any) -> None:
@@ -132,13 +129,10 @@ class DoublyLinkedList:
         Time complexity for full marks: O(1)
         """
 
-        if self._tail is None:
+        if self._size == 0:
             return None
         
-        if self._reversed:
-            return self._head.get_data()
-        else:
-            return self._tail.get_data()
+        return self._head.get_data() if self._reversed else self._tail.get_data()
         
 
     def set_tail(self, data: Any) -> None:
@@ -226,21 +220,17 @@ class DoublyLinkedList:
 
         if self._size == 0:
             return None
-       
+        
         if self._reversed:
-            head_data_to_remove = self._tail.get_data() 
-            new_head = self._tail.get_prev() # get_prev()
-        else:
-            head_data_to_remove = self._head.get_data() 
-            new_head = self._head.get_next()
+            return self.remove_from_back()
 
-        if new_head is not None: #since "get rid" of head, new head not pointing to anything previously
-            if self._reversed:
-                new_head.set_next(None)
-            else: 
-                new_head.set_prev(None)
+        head_data_to_remove = self._head.get_data()
+        new_head = self._head.get_next()
+
+        if new_head is not None:
+            new_head.set_prev(None)
         else:
-            self._tail = None #if one element in list and removed, both head and tail not pointing to anything
+            self._tail = None
 
         self._head = new_head #set the head to the new head
         self._size -= 1 #if you remove something, list decreases 
@@ -257,21 +247,16 @@ class DoublyLinkedList:
             return None
         
         if self._reversed:
-            tail_data_to_remove = self._head.get_data()
-            new_tail = self._head.get_next()   
-        else:
-            tail_data_to_remove = self._tail.get_data()
-            new_tail = self._tail.get_prev()
+            return self.remove_from_front()       
+        
+        tail_data_to_remove = self._tail.get_data()
+        new_tail = self._tail.get_prev()
 
         if new_tail is not None:
-            if self._reversed:
-                new_tail.set_prev(None)
-            else:
-                new_tail.set_next(None)
-                pass
-        else: 
-            self._head = None 
-        
+            new_tail.set_next(None)
+        else:
+            self._head = None
+
         self._tail = new_tail
         self._size -= 1
         return tail_data_to_remove
