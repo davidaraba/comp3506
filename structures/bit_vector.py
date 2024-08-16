@@ -38,18 +38,49 @@ class BitVector:
         for i in range(self._data.get_size()):
             current_element = self._data[i]
 
-            for bit_position in range(BitVector.BITS_PER_ELEMENT - 1, -1, -1):
+        if self._reverse:
+            bit_range = range(self._data.get_size() - 1, BitVector.BITS_PER_ELEMENT)
+        else: 
+            bit_range = range(BitVector.BITS_PER_ELEMENT - 1, -1, -1)
+        
+        for bit_position in bit_range:
                 bit_value = (current_element >> bit_position) & 1
                 bit_value ^= self._flip  # Flip the bit if necessary
-                bit_string += str(bit_value)
+                bit_string += str(bit_value)    
 
         return bit_string
+
+    # def __str__(self) -> str:
+    #     """
+    #     A helper that allows you to print a BitVector type
+    #     via the str() method.
+    #     """
+    #     bit_string = ""
+
+    #     if self._reverse:
+    #         element_range = range(self._data.get_size() - 1, -1, -1)
+    #     else:
+    #         element_range = range(self._data.get_size())
+
+    #     for i in element_range:
+    #         current_element = self._data[i]
+
+    #         if self._reverse:
+    #             bit_range = range(0, BitVector.BITS_PER_ELEMENT)
+    #         else:
+    #             bit_range = range(BitVector.BITS_PER_ELEMENT - 1, -1, -1)
+
+    #         for bit_position in bit_range:
+    #             bit_value = (current_element >> bit_position) & 1
+    #             bit_value ^= self._flip  # Flip the bit if necessary
+    #             bit_string += str(bit_value)
+
+    #     return bit_string
 
     def __resize(self, index: int) -> None:   
         required_size = (index // BitVector.BITS_PER_ELEMENT) + 1
         while self._data.get_size() < required_size:
             self._data.append(0)
-
 
     def get_at(self, index: int) -> int | None:
         """
@@ -57,7 +88,7 @@ class BitVector:
         Return None if index is out of bounds.
         Time complexity for full marks: O(1)
         """
-        if index < 0 or index >= self.get_size():
+        if index < 0 or index >= self._data.get_size() * BitVector.BITS_PER_ELEMENT:
             return None
         
         if self._reverse:
@@ -87,7 +118,7 @@ class BitVector:
         Time complexity for full marks: O(1)
         """
 
-        if index < 0 or index >= self.get_size():
+        if index < 0 or index >= self._data.get_size() * BitVector.BITS_PER_ELEMENT:
             return None
         
         if self._reverse:
@@ -107,8 +138,11 @@ class BitVector:
         Do not modify the vector if the index is out of bounds.
         Time complexity for full marks: O(1)
         """
-        if index < 0 or index > self._num_bits:
+        if index < 0 or index > self._data.get_size() * BitVector.BITS_PER_ELEMENT:
             return 
+        
+        if self._reverse:
+            index = self._data.get_size() - index - 1
         
         element_index = index // BitVector.BITS_PER_ELEMENT
         bit_position = index % BitVector.BITS_PER_ELEMENT
@@ -126,7 +160,11 @@ class BitVector:
         Do not modify the vector if the index is out of bounds.
         Time complexity for full marks: O(1)
         """
-        pass
+            
+        if state == 0:
+            self.unset_at(index)
+        else:
+            self.set_at(index)
 
     def append(self, state: int) -> None:
         """
@@ -140,7 +178,7 @@ class BitVector:
         bit_position = self._num_bits % BitVector.BITS_PER_ELEMENT
 
         if element_index >= self._data.get_size():
-            self.__resize()
+            self.__resize(self._num_bits)
         
         if state != 0:
             self._data[element_index] |= (1 << bit_position)
@@ -155,7 +193,24 @@ class BitVector:
         if state is 0, set the bit to 0, otherwise set the bit to 1.
         Time complexity for full marks: O(1*)
         """
-        pass
+        if self._num_bits >= self._data.get_size() * BitVector.BITS_PER_ELEMENT:
+                self.__resize(self._num_bits)
+
+        carry = 0
+
+        for i in range(self._data.get_size() - 1, -1, -1):
+            new_carry = self._data[i] & 1  # capture the last bit as carry
+            self._data[i] = (self._data[i] >> 1) | (carry << (BitVector.BITS_PER_ELEMENT - 1))
+            carry = new_carry
+
+        # Set the new bit at the start of the vector
+        if state != 0:
+            self._data[0] |= (1 << (BitVector.BITS_PER_ELEMENT - 1))
+        else:
+            self._data[0] &= ~(1 << (BitVector.BITS_PER_ELEMENT - 1))
+
+        self._num_bits += 1
+            
 
     def reverse(self) -> None:
         """
