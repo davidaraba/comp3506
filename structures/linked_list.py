@@ -270,17 +270,43 @@ class DoublyLinkedList:
         if self._size == 0:
             return False
         
-        if self._reversed:
-            current_node = self._tail
-        else:
-            current_node = self._head
+        current_node = self._tail if self._reversed else self._head
 
         while current_node is not None:
             if current_node.get_data() == elem:
                 return True
-            current_node = current_node.get_next()
+            current_node = current_node.get_prev() if self._reversed else current_node.get_next()
 
         return False
+
+    # def find_and_remove_element(self, elem: Any) -> bool:
+    #     """
+    #     Looks at the data inside each node of the list; if a match is
+    #     found, this node is removed from the linked list, and True is returned.
+    #     False is returned if no match is found.
+    #     Time complexity for full marks: O(N)
+    #     """
+
+    #     current_node = self._tail if self._reversed else self._head
+        
+    #     while current_node is not None:
+    #         if current_node.get_data() == elem:
+    #             if current_node.get_prev() is not None:
+    #                 current_node.get_prev().set_next(current_node.get_next())
+    #             else:
+    #                 self._head = current_node.get_next()
+                
+    #             if current_node.get_next() is not None:
+    #                 current_node.get_next().set_prev(current_node.get_prev()) 
+    #             else:
+    #                 self._tail = current_node.get_prev()
+                
+    #             self._size -= 1 
+    #             return True
+            
+    #         current_node = current_node.get_next()
+    
+    #     return False
 
     def find_and_remove_element(self, elem: Any) -> bool:
         """
@@ -290,31 +316,34 @@ class DoublyLinkedList:
         Time complexity for full marks: O(N)
         """
 
-        if self._reversed:
-            current_node = self._tail
-        else:
-            current_node = self._head
-
-        if self._size == 0 or not self.find_element(elem):
+        if self._size == 0:
             return False
-        
+
+        current_node = self._tail if self._reversed else self._head
+
         while current_node is not None:
             if current_node.get_data() == elem:
                 if current_node.get_prev() is not None:
                     current_node.get_prev().set_next(current_node.get_next())
                 else:
-                    self._head = current_node.get_next()
+                    if self._reversed:
+                        self._tail = current_node.get_next()
+                    else:
+                        self._head = current_node.get_next()
                 
                 if current_node.get_next() is not None:
                     current_node.get_next().set_prev(current_node.get_prev()) 
                 else:
-                    self._tail = current_node.get_prev()
+                    if self._reversed:
+                        self._head = current_node.get_prev()
+                    else:
+                        self._tail = current_node.get_prev()
                 
                 self._size -= 1 
                 return True
             
-            current_node = current_node.get_next()
-    
+            current_node = current_node.get_prev() if self._reversed else current_node.get_next()
+
         return False
 
     def reverse(self) -> None:
@@ -324,4 +353,3 @@ class DoublyLinkedList:
         """
 
         self._reversed = not self._reversed
-

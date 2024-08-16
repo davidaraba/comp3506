@@ -27,7 +27,7 @@ class DynamicArray:
         else:
             return str([self._data[x] for x in range(self._size)])
 
-    def __resize(self) -> str:
+    def __resize(self) -> None:
         self._capacity *= 2
         new_array = [None] * self._capacity
 
@@ -63,8 +63,8 @@ class DynamicArray:
         Do not modify the list if the index is out of bounds.
         Time complexity for full marks: O(1)
         """
-        if index >= self._capacity:
-            return None 
+        if index < 0 or index >= self._size:
+            return 
         
         if self._reversed:
             index = self._size - index - 1
@@ -120,8 +120,9 @@ class DynamicArray:
         # Find the index of the element to remove
         index = -1
         for i in range(self._size):
-            if self.get_at(i) == element:
-                index = i
+            actual_index = self._size - i - 1 if self._reversed else i
+            if self.get_at(actual_index) == element:
+                index = actual_index
                 break
 
         # If the element was found, remove it
@@ -140,6 +141,9 @@ class DynamicArray:
         """
         if self._size == 0 or index < 0 or index >= self._size:
             return None
+        
+        if self._reversed:
+            index = self._size - index - 1
         
         removed_element = self.get_at(index)
 

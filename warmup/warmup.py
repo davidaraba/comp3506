@@ -55,14 +55,19 @@ def main_character(instring: list[int]) -> int:
     main_character([7, 1, 2, 7]) == 3
     main_character([60000, 120000, 654321, 999, 1337, 133731337]) == -1
     """
+    
+    main_character_vector = BitVector()  
 
-    # get size of array -> size = list.get_size()
-    # character to search for would be the first element in array so searching_for = list[0]
-    # would need to loop through the array with for loop for i in range(size)
-    # if i == searching_for:
-    #       return the position we found it at (return i??)
-    # else:
-    #       return - 1
+    for _ in range(len(instring)):
+        main_character_vector.append(0)
+    
+    for i, num in enumerate(instring):  
+        if main_character_vector.get_at(num):
+            return i    
+
+        main_character_vector.set_at(num)
+    
+    return -1
 
 def missing_odds(inputs: list[int]) -> int:
     """
@@ -92,7 +97,7 @@ def missing_odds(inputs: list[int]) -> int:
 
     min_bound = inputs[0]
     max_bound = inputs[0]
-
+    
     for num in inputs:
         if num < min_bound:
             min_bound = num
@@ -111,6 +116,8 @@ def missing_odds(inputs: list[int]) -> int:
             missing_odds_sum += i
     
     return missing_odds_sum
+
+#sum of odd n^2
 
 def k_cool(k: int, n: int) -> int:
     """
@@ -179,14 +186,15 @@ def number_game(numbers: list[int]) -> tuple[str, int]:
     So, nobody picks any numbers to increase their score, which results in a Tie with both players having scores of 0.
     """
 
-    alice_score = bob_score = 0
-    
-    if alice_score > bob_score:
-        return ("Alice", alice_score)
-    elif bob_score > alice_score:
-        return ("Bob", bob_score)
-    else:
-        return ("Tie", alice_score)
+    # alice_score = bob_score = 0
+    # alice_turn = True
+
+    # if alice_score > bob_score:
+    #     return ("Alice", alice_score)
+    # elif bob_score > alice_score:
+    #     return ("Bob", bob_score)
+    # else:
+    #     return ("Tie", alice_score)
 
 def road_illumination(road_length: int, poles: list[int]) -> float:
     """
