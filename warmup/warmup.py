@@ -56,15 +56,21 @@ def main_character(instring: list[int]) -> int:
     main_character([60000, 120000, 654321, 999, 1337, 133731337]) == -1
     """
     
-    main_character_vector = BitVector()  
+    main_character_vector = BitVector() 
 
-    for _ in range(len(instring)):
+    max_num = instring[0]
+
+    for num in instring:
+        if num > max_num:
+            max_num = num 
+        
+    for i in range(max_num + 1): #need to append space based on the max num 
         main_character_vector.append(0)
-    
-    for i, num in enumerate(instring):  
-        if main_character_vector.get_at(num):
-            return i    
 
+    for i, num in enumerate(instring):
+        if main_character_vector.get_at(num) == 1:
+            return i
+        
         main_character_vector.set_at(num)
     
     return -1
@@ -95,29 +101,19 @@ def missing_odds(inputs: list[int]) -> int:
     missing_odds([4, 1, 8, 5]) == 10    # 3 and 7 are missing
     """
 
-    min_bound = inputs[0]
-    max_bound = inputs[0]
+    min_value = max_value = inputs[0]
+
+    for ele in inputs:
+        if ele < min_value:
+            min_value = ele
+        if ele > max_value:
+            max_value = ele
     
-    for num in inputs:
-        if num < min_bound:
-            min_bound = num
-        if num > max_bound:
-            max_bound = num
+    sum_missing_odds = 0
 
-    presence = [0] * (max_bound + 1)
+    return sum_missing_odds
 
-    for num in inputs:
-        presence[num] = 1
-    
-    missing_odds_sum = 0
 
-    for i in range(min_bound, max_bound):
-        if i % 2 != 0 and presence[i] == 0:
-            missing_odds_sum += i
-    
-    return missing_odds_sum
-
-#sum of odd n^2
 
 def k_cool(k: int, n: int) -> int:
     """
@@ -147,7 +143,14 @@ def k_cool(k: int, n: int) -> int:
 
     MODULUS = 10**16 + 61
 
-    # YOUR CODE GOES HERE
+    # result = 0
+    # binary_index = n - 1
+    # power = 0
+
+    # while binary_index > 0 and power == 0:
+    #     result = 
+
+
     answer = 0  # please update with the real answer... :-)
     return answer % MODULUS
 
@@ -186,15 +189,39 @@ def number_game(numbers: list[int]) -> tuple[str, int]:
     So, nobody picks any numbers to increase their score, which results in a Tie with both players having scores of 0.
     """
 
-    # alice_score = bob_score = 0
-    # alice_turn = True
+    number_game_array = DynamicArray()
 
-    # if alice_score > bob_score:
-    #     return ("Alice", alice_score)
-    # elif bob_score > alice_score:
-    #     return ("Bob", bob_score)
-    # else:
-    #     return ("Tie", alice_score)
+    for num in numbers:
+        number_game_array.append(num)
+
+    number_game_array.sort()
+
+    alice_score = bob_score = 0
+    alice_turn = True
+
+    for i in range(number_game_array.get_size() - 1, -1, -1):
+        num = number_game_array[i]
+
+        if alice_turn:
+            if num % 2 == 0:
+                alice_score += num
+            else:
+                alice_score += 0
+
+        if not alice_turn:
+            if num % 2 == 1:
+                bob_score += num 
+            else:
+                bob_score += 0  
+
+        alice_turn = not alice_turn
+
+    if alice_score > bob_score:
+        return ("Alice", alice_score)
+    elif bob_score > alice_score:
+        return ("Bob", bob_score)
+    else:
+        return ("Tie", alice_score)
 
 def road_illumination(road_length: int, poles: list[int]) -> float:
     """
@@ -224,5 +251,28 @@ def road_illumination(road_length: int, poles: list[int]) -> float:
     road_illumination(5, [2, 5]) == 2.0
     """
 
-    # YOUR CODE GOES HERE
-    pass
+    pole_position = DynamicArray()
+    
+    for pole in poles:
+        pole_position.append(pole)
+    
+    pole_position.sort()
+
+    max_gap = 0
+    for i in range(pole_position.get_size() - 1):
+        difference = pole_position[i + 1] - pole_position[i]
+        if difference > max_gap:
+            max_gap = difference
+    
+    minimal_radius = max_gap / 2
+
+    distance_of_first_pole_from_road = pole_position[0] - 0
+    distance_of_last_pole_from_road = road_length - pole_position[pole_position.get_size() -1]
+
+    if distance_of_first_pole_from_road > minimal_radius:
+        minimal_radius = distance_of_first_pole_from_road
+    
+    if distance_of_last_pole_from_road > minimal_radius:
+        minimal_radius = distance_of_last_pole_from_road 
+    
+    return float(minimal_radius)
