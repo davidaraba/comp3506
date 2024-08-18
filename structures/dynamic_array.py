@@ -202,8 +202,12 @@ class DynamicArray:
         left_length = middle - left
         right_length = right - middle
 
-        left_array = [None] * left_length
-        right_array = [None] * right_length
+        # left_array = [None] * left_length
+        # right_array = [None] * right_length
+
+        left_array = [self._data[left + i] for i in range(left_length)]
+        right_array = [self._data[middle + j] for j in range(right_length)]
+
 
         for i in range(left_length):
             left_array[i] = self._data[left + i]

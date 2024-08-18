@@ -145,14 +145,34 @@ class BitVector:
         
         self._num_bits += 1
 
-    def prepend(self, state: Any) -> None:
+    def prepend(self, state: int) -> None:
         """
         Add a bit to the front of the vector.
         Treat the integer in the same way Python does:
         if state is 0, set the bit to 0, otherwise set the bit to 1.
         Time complexity for full marks: O(1*)
         """
-        pass
+        if self._num_bits == self._data.get_size() * self.BITS_PER_ELEMENT:
+            self.__resize()
+
+        # Increase the total number of bits first
+        self._num_bits += 1
+
+        # Shift all bits one position to the right to make room for the new bit
+        carry = 0
+        for i in range(self._data.get_size()):
+            current_chunk = self._data[i]
+            # Carry the bit that will be shifted out
+            new_carry = (current_chunk >> (self.BITS_PER_ELEMENT - 1)) & 1
+            # Shift current chunk to the right and add the carry from the previous chunk
+            self._data[i] = ((current_chunk << 1) & ((1 << self.BITS_PER_ELEMENT) - 1)) | carry
+            carry = new_carry
+
+        # Set the first bit (prepend)
+        if state == 1:
+            self._data[0] |= 1
+        else:
+            self._data[0] &= ~1
 
     def reverse(self) -> None:
         """
@@ -201,7 +221,6 @@ class BitVector:
             else:
                 self._data[i] = 0
 
-
     def __right_shift(self, right_dist: int) -> None:
         full_shifts = right_dist // BitVector.BITS_PER_ELEMENT
         bit_shifts = right_dist % BitVector.BITS_PER_ELEMENT
@@ -226,9 +245,62 @@ class BitVector:
         """
         Make a bit rotation.
         If dist is positive, perform a left rotation by `dist`.
-        Otherwise perform a right rotation by `dist`.
+        Otherwise, perform a right rotation by `dist`.
         Time complexity for full marks: O(N)
         """
+
+        if dist == 0 or self._num_bits == 0:
+            return
+
+        dist = dist % self._num_bits  # Normalize rotation within the total number of bits
+
+        if dist > 0:
+            self.__left_rotate(dist)
+        else:
+            self.__right_rotate(-dist)
+
+    def __left_rotate(self, left_rot: int) -> None:
+        total_bits = self._num_bits
+        left_rot = left_rot % total_bits
+
+        if left_rot == 0:
+            return
+
+        # Combine all bits into a single value for rotation
+        combined_bits = 0
+        for i in range(self._data.get_size()):
+            combined_bits |= self._data[i] << (i * BitVector.BITS_PER_ELEMENT)
+
+        # Perform the rotation
+        combined_bits = ((combined_bits << left_rot) | (combined_bits >> \
+                        (total_bits - left_rot))) & ((1 << total_bits) - 1)
+
+        # Split the bits back into the DynamicArray
+        for i in range(self._data.get_size()):
+            self._data[i] = (combined_bits >> (i * BitVector.BITS_PER_ELEMENT)) \
+            & ((1 << BitVector.BITS_PER_ELEMENT) - 1)
+
+    def __right_rotate(self, right_rot: int) -> None:
+        total_bits = self._num_bits
+        right_rot = right_rot % total_bits
+
+        if right_rot == 0:
+            return
+
+        # Combine all bits into a single value for rotation
+        combined_bits = 0
+        for i in range(self._data.get_size()):
+            combined_bits |= self._data[i] << (i * BitVector.BITS_PER_ELEMENT)
+
+        # Perform the rotation
+        combined_bits = ((combined_bits >> right_rot) | \
+            (combined_bits << (total_bits - right_rot))) & ((1 << total_bits) - 1)
+
+        # Split the bits back into the DynamicArray
+        for i in range(self._data.get_size()):
+            self._data[i] = (combined_bits >> (i * BitVector.BITS_PER_ELEMENT)) \
+                & ((1 << BitVector.BITS_PER_ELEMENT) - 1)
+
 
     def get_size(self) -> int:
         """
