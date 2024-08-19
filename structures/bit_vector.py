@@ -8,7 +8,6 @@ from typing import Any
 
 from structures.dynamic_array import DynamicArray
 
-
 class BitVector:
     """
     A compact storage for bits that uses DynamicArray under the hood.
@@ -34,7 +33,7 @@ class BitVector:
         via the str() method.
         """
         bit_string = ""
-        for i in range(self._num_bits):
+        for i in range(self._num_bits - 1, -1, -1):
             bit_value = self.get_at(i)
             if bit_value == 0:
                 bit_string += "0"
@@ -46,7 +45,12 @@ class BitVector:
         """
         Resizes the dynamic array by doubling its capacity.
         """
-        new_capacity = self._data.get_size() * 2
+        current_capacity = self._data.get_size()
+        if current_capacity < 1024:
+            new_capacity = self._data.get_size() * 2
+        else:
+            new_capacity = current_capacity + (current_capacity // 2)
+        
         new_data = DynamicArray()
         for _ in range(new_capacity):
             new_data.append(0)
@@ -62,12 +66,13 @@ class BitVector:
         """
         if index < 0 or index >= self._num_bits:
             return None
-        
+
         actual_index = self._num_bits - index - 1 if self._reverse else index
         element_index = actual_index // self.BITS_PER_ELEMENT
         bit_position = actual_index % self.BITS_PER_ELEMENT
         bit_value = (self._data[element_index] >> bit_position) & 1
-        return bit_value ^ self._flip
+        # return bit_value ^ int(self._flip)
+        return bit_value if not self._flip else 1 - bit_value
 
     def __getitem__(self, index: int) -> int | None:
         """
@@ -139,9 +144,15 @@ class BitVector:
 
         element_index = self._num_bits // self.BITS_PER_ELEMENT
         bit_position = self._num_bits % self.BITS_PER_ELEMENT
-
-        if state != 0:
-            self._data[element_index] |= (1 << bit_position)
+        
+        if self._flip:
+            if state == 0:
+                self._data[element_index] |= (1 << bit_position)
+            else:
+                self._data[element_index] &= ~(1 << bit_position)
+        else:
+            if state != 0:
+                self._data[element_index] |= (1 << bit_position)
         
         self._num_bits += 1
 
@@ -169,10 +180,16 @@ class BitVector:
             carry = new_carry
 
         # Set the first bit (prepend)
-        if state == 1:
-            self._data[0] |= 1
+        if self._flip:
+            if state == 0:
+                self._data[0] |= 1
+            else:
+                self._data[0] &= ~1
         else:
-            self._data[0] &= ~1
+            if state == 1:
+                self._data[0] |= 1
+            else:
+                self._data[0] &= ~1
 
     def reverse(self) -> None:
         """
@@ -239,8 +256,6 @@ class BitVector:
             else:
                 self._data[i] = 0
 
-        
-
     def rotate(self, dist: int) -> None:
         """
         Make a bit rotation.
@@ -300,11 +315,21 @@ class BitVector:
         for i in range(self._data.get_size()):
             self._data[i] = (combined_bits >> (i * BitVector.BITS_PER_ELEMENT)) \
                 & ((1 << BitVector.BITS_PER_ELEMENT) - 1)
-
-
+            
     def get_size(self) -> int:
         """
         Return the number of *bits* in the list
         Time complexity for full marks: O(1)
         """
         return self._num_bits
+    
+    # def initialise(self, size: int):
+    #     num_elemets = (size + self.BITS_PER_ELEMENT - 1) // self.BITS_PER_ELEMENT
+
+    #     self._data = DynamicArray()
+
+    #     for _ in range(num_elemets * 10):
+    #         self._data.append(0)
+
+    #     self._num_bits = size
+            
