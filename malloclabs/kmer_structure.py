@@ -37,25 +37,31 @@ class KmerStore:
         """
         try:
             with open(infile, 'r') as file:
+                sequence = []
                 for line in file:
-                    sequence = ""
                     for char in line:
-                        if char != '\n' and char != "\r":
-                            sequence += char
-                        
-                sequence_length = 0
-                for _ in sequence:
-                    sequence_length += 1
+                        if char != '\n' and char != '\r':
+                            sequence.append(char)
                 
-                for i in range(sequence_length - self._k + 1):
-                    kmer = ""
-                    for j in range(self._k):
-                        kmer += sequence[i + j]
-                    self.__store_kmer(kmer)
+            sequence_length = len(sequence)
+            if sequence_length < self._k:
+                print("Sequence is too short to generate any k-mers.")
+                return
+            
+            for i in range(sequence_length - self._k + 1):
+                kmer = []  # Create an empty list to build the k-mer
+                for j in range(i, i + self._k):
+                    kmer.append(sequence[j])  # Add characters to the k-mer list
+                
+                kmer_str = ""  # Initialize an empty string
+                for char in kmer:
+                    kmer_str += char  # Manually concatenate characters
+                
+                self._store_kmer(kmer_str) #implement
         except FileNotFoundError:
             print("Unable to locate file provided")
     
-    def __store_kmer(self, kmer: str) -> None:
+    def _store_kmer(self, kmer: str) -> None:
         for i in range(self._kmers.get_size()):
             if self._kmers.get_at(i) == kmer:
                 current_frequency = self._frequencies.get_at(i)
@@ -64,60 +70,17 @@ class KmerStore:
             
         self._kmers.append(kmer)
         self._frequencies.append(1)
-
+        
     def batch_insert(self, kmers: list[str]) -> None:
         """
-        Given a list of m k-mers, insert the matching ones
+        Given a list of m k-mers, delete the matching ones
         (including all duplicates).
         [V2: Correction]
         If the data structure contains n elements, and the input kmer list
         contains m elements, the targeted time complexity is:
         O(m log m) + O(n + m) amortized time (or better, of course!)
         """
-
-        # print(self._kmers)
-        # print(self._frequencies)
-
-        batch_kmers = DynamicArray()
-        for kmer in kmers:
-            batch_kmers.append(kmer)
-        batch_kmers.sort()
-
-        inserted_kmers_array = DynamicArray()
-        inserted_kmers_array_frequency = DynamicArray()
-
-        i = j = 0
-
-        while i < self._kmers.get_size() and j < batch_kmers.get_size():
-            if self._kmers.get_at(i) < batch_kmers.get_at(j): #if element in self < batch 
-                inserted_kmers_array.append(self._kmers.get_at(i))
-                inserted_kmers_array_frequency.append(self._frequencies.get_at(i))
-                i += 1           
-            elif self._kmers.get_at(i) > batch_kmers.get_at(j):
-                inserted_kmers_array.append(batch_kmers.get_at(j))
-                inserted_kmers_array_frequency.append(1)
-                j += 1
-            else:
-                inserted_kmers_array.append(self._kmers.get_at(i))
-                inserted_kmers_array_frequency.append(self._frequencies.get_at(i) + 1)
-                i += 1
-                j += 1
-    
-        while i < self._kmers.get_size():
-            inserted_kmers_array.append(self._kmers.get_at(i))
-            inserted_kmers_array_frequency.append(self._frequencies.get_at(i))
-            i += 1
-    
-        while j < batch_kmers.get_size():
-            inserted_kmers_array.append(batch_kmers.get_at(j))
-            inserted_kmers_array_frequency.append(1)
-            j += 1
-    
-        self._kmers = inserted_kmers_array
-        self._frequencies = inserted_kmers_array_frequency
-
-        # print(self._kmers)
-        # print(self._frequencies)
+        pass
 
     def batch_delete(self, kmers: list[str]) -> None:
         """
@@ -129,19 +92,7 @@ class KmerStore:
         O(m log m) + O(n + m) amortized time (or better, of course!)
  
         """
-        #edge 1:
-            #kmer not already in data, do nothing 
-        
-        #edge 2
-            #0 after delete 
-
-
-
-        for kmer in kmers:
-            if kmer == self._kmers:
-                pass
-
-
+        pass
 
     def freq_geq(self, m: int) -> list[str]:
         """
@@ -150,12 +101,12 @@ class KmerStore:
         Time complexity for full marks: O(n)
         """
         
-        result = DynamicArray()
-        for i in range(self._kmers.get_size()):
-            kmer = self._kmers[i]
-            frequency = self._frequencies[i]
-            if frequency >= m:
-                result.append(kmer)
+        result = []
+        size = self._kmers.get_size()
+        
+        for i in range(size):
+            if self._frequencies[i] >= m:
+                result.append(self._kmers[i])
         return result 
 
     def count(self, kmer: str) -> int:
@@ -194,4 +145,5 @@ class KmerStore:
             kmer = self._kmers.get_at(i)
             frequency = self._frequencies.get_at(i)
             print(f"{kmer}: {frequency}")
+        # print(self._kmers)
         

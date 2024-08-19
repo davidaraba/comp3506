@@ -45,11 +45,7 @@ class BitVector:
         """
         Resizes the dynamic array by doubling its capacity.
         """
-        current_capacity = self._data.get_size()
-        if current_capacity < 1024:
-            new_capacity = self._data.get_size() * 2
-        else:
-            new_capacity = current_capacity + (current_capacity // 2)
+        new_capacity = self._data.get_size() * 2
         
         new_data = DynamicArray()
         for _ in range(new_capacity):
@@ -71,8 +67,7 @@ class BitVector:
         element_index = actual_index // self.BITS_PER_ELEMENT
         bit_position = actual_index % self.BITS_PER_ELEMENT
         bit_value = (self._data[element_index] >> bit_position) & 1
-        # return bit_value ^ int(self._flip)
-        return bit_value if not self._flip else 1 - bit_value
+        return bit_value ^ int(self._flip)
 
     def __getitem__(self, index: int) -> int | None:
         """

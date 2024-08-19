@@ -6,35 +6,33 @@ Joel Mackenzie and Vladimir Morozov
 
 from typing import Any
 
-
 class DynamicArray:
     def __init__(self) -> None:
         self._size = 0
+        self._start = 0
         self._capacity = 1
         self._data = [None] * self._capacity 
         self._reversed = False
 
     def __str__(self) -> str:
-        """
-        A helper that allows you to print a DynamicArray type
-        via the str() method.
-        """
         if self._size == 0:
             return "Array is empty" 
     
         if self._reversed:
-            return str([self._data[self._size - 1 - x] for x in range(self._size)])
+            return str([self._data[(self._start + self._size - 1 - x) % self._capacity] for x in range(self._size)])
         else:
-            return str([self._data[x] for x in range(self._size)])
+            return str([self._data[(self._start + x) % self._capacity] for x in range(self._size)])
 
     def __resize(self) -> None:
-        self._capacity *= 2
-        new_array = [None] * self._capacity
+        new_capacity = self._capacity * 2
+        new_data = [None] * new_capacity
 
         for i in range(self._size):
-            new_array[i] = self._data[i]
+            new_data[i] = self._data[(self._start + i) % self._capacity]
         
-        self._data = new_array 
+        self._data = new_data
+        self._capacity = new_capacity
+        self._start = 0
         
     def get_at(self, index: int) -> Any | None:
         """
@@ -47,8 +45,9 @@ class DynamicArray:
         
         if self._reversed:
             index = self._size - index - 1
-
-        return self._data[index]
+            
+        actual_index = (self._start + index) % self._capacity
+        return self._data[actual_index]
 
     def __getitem__(self, index: int) -> Any | None:
         """
@@ -59,7 +58,7 @@ class DynamicArray:
 
     def set_at(self, index: int, element: Any) -> None:
         """
-        Get element at the given index.
+        Set element at the given index.
         Do not modify the list if the index is out of bounds.
         Time complexity for full marks: O(1)
         """
@@ -68,8 +67,10 @@ class DynamicArray:
         
         if self._reversed:
             index = self._size - index - 1
+
+        actual_index = (self._start + index) % self._capacity
         
-        self._data[index] = element
+        self._data[actual_index] = element
         
     def __setitem__(self, index: int, element: Any) -> None:
         """
@@ -86,7 +87,8 @@ class DynamicArray:
         if self._size == self._capacity:
             self.__resize()
             
-        self._data[self._size] = element 
+        end_index = (self._start + self._size) % self._capacity
+        self._data[end_index] = element
         self._size += 1 
 
     def prepend(self, element: Any) -> None:
@@ -96,12 +98,10 @@ class DynamicArray:
         """
         if self._size == self._capacity:
             self.__resize()
-        
-        for i in range(self._size, 0, -1):
-            self._data[i] = self._data[i - 1]
-        
-        self._data[0] = element
-        self._size += 1 
+
+        self._start = (self._start - 1) % self._capacity
+        self._data[self._start] = element
+        self._size += 1
 
     def reverse(self) -> None:
         """
@@ -128,7 +128,7 @@ class DynamicArray:
         # If the element was found, remove it
         if index != -1:
             for i in range(index, self._size - 1):
-                self._data[i] = self._data[i + 1]
+                self._data[(self._start + i) % self._capacity] = self._data[(self._start + i + 1) % self._capacity]
             
             self._size -= 1
             
@@ -148,7 +148,7 @@ class DynamicArray:
         removed_element = self.get_at(index)
 
         for i in range(index, self._size - 1):
-            self._data[i] = self._data[i + 1]
+            self._data[(self._start + i) % self._capacity] = self._data[(self._start + i + 1) % self._capacity]
 
         self._size -= 1
         return removed_element
@@ -202,37 +202,45 @@ class DynamicArray:
         left_length = middle - left
         right_length = right - middle
 
-        # left_array = [None] * left_length
-        # right_array = [None] * right_length
-
-        left_array = [self._data[left + i] for i in range(left_length)]
-        right_array = [self._data[middle + j] for j in range(right_length)]
-
-
-        for i in range(left_length):
-            left_array[i] = self._data[left + i]
-
-        for j in range(right_length):
-            right_array[j] = self._data[middle + j]
+        left_array = [self._data[(self._start + left + i) % self._capacity] for i in range(left_length)]
+        right_array = [self._data[(self._start + middle + j) % self._capacity] for j in range(right_length)]
 
         l = r = 0 
         a = left 
 
         while l < left_length and r < right_length:
             if left_array[l] <= right_array[r]:
-                self._data[a] = left_array[l]
+                self._data[(self._start + a) % self._capacity] = left_array[l]
                 l += 1
             else:
-                self._data[a] = right_array[r]
+                self._data[(self._start + a) % self._capacity] = right_array[r]
                 r+= 1
             a += 1
 
         while l < left_length:
-            self._data[a] = left_array[l]
+            self._data[(self._start + a) % self._capacity] = left_array[l]
             a += 1
             l += 1
 
         while r < right_length:
-            self._data[a] = right_array[r]
+            self._data[(self._start + a) % self._capacity] = right_array[r]
             a += 1
             r += 1 
+    
+    def _insert_at(self, index: int, element: Any) -> None:
+        if index < 0 or index >= self._size:
+            return 
+        
+        if self._size == self._capacity:
+            self.__resize()
+        
+        if self._reversed:
+            index = self._size - index - 1
+        
+        actual_index = (self._start + index) % self._capacity
+        
+        for i in range(self._size, index, -1):
+            self._data[(self._start + i) % self._capacity] = self._data[(self._start + i - 1) % self._capacity]
+        
+        self._data[actual_index] = element
+        self._size += 1
