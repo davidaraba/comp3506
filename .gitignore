@@ -1,6 +1,7 @@
 
 test_structures.py
 test_warmup.py
+test_kmers.py
 test_structures.py
 .DS_Store
 
