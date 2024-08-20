@@ -83,14 +83,22 @@ def missing_odds(inputs: list[int]) -> int:
     """
 
     min_value = max_value = inputs[0]
+    odd_tracker = 0
 
+    # Find min and max values and track the sum of odd numbers
     for ele in inputs:
+        if ele % 2 == 1:
+            odd_tracker += ele
         if ele < min_value:
             min_value = ele
         if ele > max_value:
             max_value = ele
     
-    sum_missing_odds = 0
+    min_range = min_value // 2
+    max_range = (max_value + 1) // 2
+
+    # Calculate the result using the formula
+    sum_missing_odds = (max_range**2 - min_range**2) - odd_tracker
 
     return sum_missing_odds
 
