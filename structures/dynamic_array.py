@@ -228,7 +228,7 @@ class DynamicArray:
             r += 1 
     
     def _insert_at(self, index: int, element: Any) -> None:
-        if index < 0 or index >= self._size:
+        if index < 0 or index > self._size:
             return 
         
         if self._size == self._capacity:
