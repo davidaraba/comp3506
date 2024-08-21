@@ -86,9 +86,15 @@ class DynamicArray:
         """
         if self._size == self._capacity:
             self.__resize()
-            
-        end_index = (self._start + self._size) % self._capacity
-        self._data[end_index] = element
+        
+        if self._reversed:
+            # Insert at the start if reversed
+            self._start = (self._start - 1) % self._capacity
+            self._data[self._start] = element
+        else:
+            end_index = (self._start + self._size) % self._capacity
+            self._data[end_index] = element
+        
         self._size += 1 
 
     def prepend(self, element: Any) -> None:
@@ -99,8 +105,15 @@ class DynamicArray:
         if self._size == self._capacity:
             self.__resize()
 
-        self._start = (self._start - 1) % self._capacity
-        self._data[self._start] = element
+        if self._reversed:
+            # Insert at the end if reversed
+            end_index = (self._start + self._size) % self._capacity
+            self._data[end_index] = element
+        else:
+            # Normal prepend
+            self._start = (self._start - 1) % self._capacity
+            self._data[self._start] = element
+
         self._size += 1
 
     def reverse(self) -> None:
