@@ -32,110 +32,49 @@ from structures.bit_vector import BitVector
 from structures.dynamic_array import DynamicArray
 from structures.linked_list import DoublyLinkedList, Node
 
-
-# def main_character(instring: list[int]) -> int:
-#     """
-#     @instring@ is an array of integers in the range [0, 2^{32}-1].
-#     Return the first position a repeat integer is encountered, or -1 if
-#     there are no repeated ints.
-
-#     Limitations:
-#         "It works":
-#             @instring@ may contain up to 10'000 elements.
-
-#         "Exhaustive":
-#             @instring@ may contain up to 300'000 elements.
-
-#         "Welcome to COMP3506":
-#             @instring@ may contain up to 5'000'000 elements.
-
-#     Examples:
-#     main_character([1, 2, 3, 4, 5]) == -1
-#     main_character([1, 2, 1, 4, 4, 4]) == 2
-#     main_character([7, 1, 2, 7]) == 3
-#     main_character([60000, 120000, 654321, 999, 1337, 133731337]) == -1
-#     """
 def main_character(instring: list[int]) -> int:
     """
     @instring@ is an array of integers in the range [0, 2^{32}-1].
     Return the first position a repeat integer is encountered, or -1 if
     there are no repeated ints.
+
+    Limitations:
+        "It works":
+            @instring@ may contain up to 10'000 elements.
+
+        "Exhaustive":
+            @instring@ may contain up to 300'000 elements.
+
+        "Welcome to COMP3506":
+            @instring@ may contain up to 5'000'000 elements.
+
+    Examples:
+    main_character([1, 2, 3, 4, 5]) == -1
+    main_character([1, 2, 1, 4, 4, 4]) == 2
+    main_character([7, 1, 2, 7]) == 3
+    main_character([60000, 120000, 654321, 999, 1337, 133731337]) == -1
     """
 
-    # Use a large prime number for the modulo operation to reduce collisions.
-    mod_value = 10000019  # Adjust this value based on the size you expect to handle.
+    def hash(key, size):
+        return key % size
     
-    # Initialize the BitVector with enough capacity to hold `mod_value * BITS_PER_ELEMENT` bits.
-    main_character_vector = BitVector()
-    main_character_vector.initialise(mod_value)  # Pre-allocate enough space.
+    def collision_preventer(index, size):
+        return (index + 1) % size
+    
+    size = len(instring) * 2
+    keys = DynamicArray()
 
-    for i in range(len(instring)):
-        # Calculate the hash using modulo operation.
-        num = instring[i] % mod_value
-        
-        # Check if the bit corresponding to this number is already set.
-        if main_character_vector.get_at(num) == 1:
-            return i
-        
-        # Set the bit for this number.
-        main_character_vector.set_at(num)
-    
+    for _ in range(size):
+        keys.append(None)
+
+    for i, number in enumerate(instring):
+        x = hash(number, size)
+        while keys.get_at(x) is not None:
+            if keys.get_at(x) == number:
+                return i 
+            x = collision_preventer(x, size)
+        keys.set_at(x, number)
     return -1
-
-
-    # mod_value = 10000000
-    
-    # main_character_vector = BitVector()
-    # main_character_vector_seen_elem = BitVector()
-    
-    # main_character_vector.initialise(mod_value)
-    
-    # for i in range(len(instring)):
-    #     num = instring[i] % mod_value
-    #     main_character_vector_seen_elem.append(num)
-    #     if main_character_vector.get_at(num) == 1 and num not in main_character_vector_seen_elem:
-    #         return i
-    #     main_character_vector.set_at(num) == 1
-    # return -1 
-
-    # mod_value = 10000019
-    # main_character_vector = BitVector()
-    # main_character_vector.initialise(mod_value)
-
-    # for i in range(len(instring)):
-    #     if main_character_vector.get_at(instring[i]) == 1:
-    #         return i
-    #     main_character_vector.append(instring[i])
-    
-    # return -1
-
-# def main_character(instring: list[int]) -> int:
-#     """
-#     @instring@ is an array of integers in the range [0, 2^{32}-1].
-#     Return the first position a repeat integer is encountered, or -1 if
-#     there are no repeated ints.
-#     """
-#     # Choose a mod value to minimize collisions
-#     mod_value = 100000000  # You can adjust this based on the expected input size.
-
-#     # Initialize the BitVector
-#     main_character_vector = BitVector()
-
-#     main_character_vector.initialise(mod_value)
-
-#     for i in range(len(instring)):
-#         # Hash the number to fit within the range of BitVector.
-#         num = instring[i] % mod_value
-
-#         # Check if the bit at the position 'num' is already set (meaning the number was seen before).
-#         if main_character_vector.get_at(num) == 1:
-#             return i
-
-#         # If not, set the bit at that position to 1.
-#         main_character_vector.set_at(num)
-
-#     return -1  # Return -1 if no repeats are found.
-
 
 def missing_odds(inputs: list[int]) -> int:
     """

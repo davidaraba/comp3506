@@ -33,12 +33,9 @@ class BitVector:
         via the str() method.
         """
         bit_string = ""
-        for i in range(self._num_bits - 1, -1, -1):
+        for i in range(self._num_bits):
             bit_value = self.get_at(i)
-            if bit_value == 0:
-                bit_string += "0"
-            else:
-                bit_string += "1"
+            bit_string += "1" if bit_value else "0"
         return bit_string
 
     def __resize(self) -> None:
@@ -161,30 +158,30 @@ class BitVector:
         if self._num_bits == self._data.get_size() * self.BITS_PER_ELEMENT:
             self.__resize()
 
-        # Increase the total number of bits first
-        self._num_bits += 1
-
-        # Shift all bits one position to the right to make room for the new bit
-        carry = 0
-        for i in range(self._data.get_size()):
-            current_chunk = self._data[i]
-            # Carry the bit that will be shifted out
-            new_carry = (current_chunk >> (self.BITS_PER_ELEMENT - 1)) & 1
-            # Shift current chunk to the right and add the carry from the previous chunk
-            self._data[i] = ((current_chunk << 1) & ((1 << self.BITS_PER_ELEMENT) - 1)) | carry
-            carry = new_carry
-
-        # Set the first bit (prepend)
-        if self._flip:
-            if state == 0:
-                self._data[0] |= 1
-            else:
-                self._data[0] &= ~1
+        if self._reverse:
+            # In reversed mode, prepend should act like append
+            self.append(state)
         else:
-            if state == 1:
-                self._data[0] |= 1
+            self._num_bits += 1
+
+            carry = 0
+            for i in range(self._data.get_size()):
+                current_chunk = self._data[i]
+                new_carry = (current_chunk >> (self.BITS_PER_ELEMENT - 1)) & 1
+                self._data[i] = ((current_chunk << 1) & ((1 << self.BITS_PER_ELEMENT) - 1)) | carry
+                carry = new_carry
+
+            # Set the first bit (prepend)
+            if self._flip:
+                if state == 0:
+                    self._data[0] |= 1
+                else:
+                    self._data[0] &= ~1
             else:
-                self._data[0] &= ~1
+                if state == 1:
+                    self._data[0] |= 1
+                else:
+                    self._data[0] &= ~1
 
     def reverse(self) -> None:
         """
@@ -326,4 +323,3 @@ class BitVector:
             self._data.append(0)
 
         self._num_bits = size
-            
