@@ -10,8 +10,8 @@ class DynamicArray:
     def __init__(self) -> None:
         self._size = 0
         self._start = 0
-        self._capacity = 1
-        self._data = [None] * self._capacity 
+        self._capacity = 16
+        self._data = [0] * self._capacity 
         self._reversed = False
 
     def __str__(self) -> str:
@@ -24,8 +24,8 @@ class DynamicArray:
             return str([self._data[(self._start + x) % self._capacity] for x in range(self._size)])
 
     def __resize(self) -> None:
-        new_capacity = self._capacity * 2
-        new_data = [None] * new_capacity
+        new_capacity = self._capacity * 3
+        new_data = [0] * new_capacity
 
         for i in range(self._size):
             new_data[i] = self._data[(self._start + i) % self._capacity]
@@ -197,49 +197,38 @@ class DynamicArray:
 
     def sort(self) -> None:
         """
-        Sort elements inside _data based on < comparisons.
+        Sort elements inside _data based on < comparisons using quicksort.
         Time complexity for full marks: O(NlogN)
         """
         if self._size > 1:
-            self.__merge_sort(0, self._size)
+            self.__quick_sort(0, self._size - 1)
 
-    def __merge_sort(self, left: int, right: int) -> None:
+    def __quick_sort(self, low: int, high: int) -> None:
+        if low < high:
+            pivot_index = self.__partition(low, high)
+            self.__quick_sort(low, pivot_index - 1)
+            self.__quick_sort(pivot_index + 1, high)
 
-        if right - left > 1:
-            middle = (left + right) // 2
-            self.__merge_sort(left, middle)
-            self.__merge_sort(middle, right)
-            self.__merge(left, middle, right)
+    def __partition(self, low: int, high: int) -> int:
+        pivot_index = low + (high - low) // 2
+        pivot_value = self._data[(self._start + pivot_index) % self._capacity]
+        self._data[(self._start + pivot_index) % self._capacity], self._data[(self._start + high) % self._capacity] = \
+            self._data[(self._start + high) % self._capacity], self._data[(self._start + pivot_index) % self._capacity]
+        
+        store_index = low
+        for i in range(low, high):
+            actual_index = (self._start + i) % self._capacity
+            if self._data[actual_index] < pivot_value:
+                self._data[(self._start + store_index) % self._capacity], self._data[actual_index] = \
+                    self._data[actual_index], self._data[(self._start + store_index) % self._capacity]
+                store_index += 1
+        
+        self._data[(self._start + store_index) % self._capacity], self._data[(self._start + high) % self._capacity] = \
+            self._data[(self._start + high) % self._capacity], self._data[(self._start + store_index) % self._capacity]
+        
+        return store_index
 
-    def __merge(self, left: int, middle: int, right: int) -> None:
-        left_length = middle - left
-        right_length = right - middle
 
-        left_array = [self._data[(self._start + left + i) % self._capacity] for i in range(left_length)]
-        right_array = [self._data[(self._start + middle + j) % self._capacity] for j in range(right_length)]
-
-        l = r = 0 
-        a = left 
-
-        while l < left_length and r < right_length:
-            if left_array[l] <= right_array[r]:
-                self._data[(self._start + a) % self._capacity] = left_array[l]
-                l += 1
-            else:
-                self._data[(self._start + a) % self._capacity] = right_array[r]
-                r+= 1
-            a += 1
-
-        while l < left_length:
-            self._data[(self._start + a) % self._capacity] = left_array[l]
-            a += 1
-            l += 1
-
-        while r < right_length:
-            self._data[(self._start + a) % self._capacity] = right_array[r]
-            a += 1
-            r += 1 
-    
     def _insert_at(self, index: int, element: Any) -> None:
         if index < 0 or index > self._size:
             return 

@@ -150,18 +150,28 @@ def k_cool(k: int, n: int) -> int:
 
     MODULUS = 10**16 + 61
 
+    def modular_exponentiation(base: int, exp: int, mod: int) -> int:
+        result = 1
+        base = base % mod  # Ensure base is within mod
+        while exp > 0:
+            # If exp is odd, multiply base with the result
+            if exp % 2 == 1:
+                result = (result * base) % mod
+            # Square the base
+            base = (base * base) % mod
+            # Halve the exponent
+            exp = exp // 2
+        return result
+
     result = 0
     binary_index = n   
     power = 0
 
-    while binary_index > 0 or power == 0:  # We process at least the 0th power
+    while binary_index > 0 or power == 0:  # Process at least the 0th power
         # Check if the current bit is set in binary_index
         if binary_index & 1:
-            # Calculate k^power manually and take it modulo MODULUS
-            power_value = 1
-            for _ in range(power):
-                power_value = (power_value * k) % MODULUS
-            
+            # Calculate k^power using modular exponentiation
+            power_value = modular_exponentiation(k, power, MODULUS)
             # Add the result of k^power to the total result
             result = (result + power_value) % MODULUS
         
@@ -170,6 +180,7 @@ def k_cool(k: int, n: int) -> int:
         power += 1
 
     return result
+
 
 def number_game(numbers: list[int]) -> tuple[str, int]:
     """
@@ -207,15 +218,16 @@ def number_game(numbers: list[int]) -> tuple[str, int]:
 
     number_game_array = DynamicArray()
 
-    for num in numbers:
-        number_game_array.append(num)
+    for i in range(len(numbers)):
+        number_game_array.append(numbers[i])
 
     number_game_array.sort()
 
     alice_score = bob_score = 0
     alice_turn = True
+    size = len(numbers) - 1
 
-    for i in range(number_game_array.get_size() - 1, -1, -1): # Optimal is selecting biggest num regardless if even or odd
+    for i in range(size, -1, -1): # Optimal is selecting biggest num regardless if even or odd
         if alice_turn:
             if number_game_array[i] % 2 == 0: # If biggest num even and alice turn, add to alice score
                 alice_score += number_game_array[i]
