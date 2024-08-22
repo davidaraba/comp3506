@@ -68,12 +68,12 @@ def main_character(instring: list[int]) -> int:
         keys.append(None)
 
     for i, number in enumerate(instring):
-        x = hash(number, size)
-        while keys.get_at(x) is not None:
-            if keys.get_at(x) == number:
+        hashedi = hash(number, size)
+        while keys.get_at(hashedi) is not None:
+            if keys.get_at(hashedi) == number:
                 return i 
-            x = collision_preventer(x, size)
-        keys.set_at(x, number)
+            hashedi = collision_preventer(hashedi, size)
+        keys.set_at(hashedi, number)
     return -1
 
 def missing_odds(inputs: list[int]) -> int:
@@ -181,7 +181,6 @@ def k_cool(k: int, n: int) -> int:
 
     return result
 
-
 def number_game(numbers: list[int]) -> tuple[str, int]:
     """
     @numbers@ is an unordered array of integers. The array is guaranteed to be of even length.
@@ -215,6 +214,31 @@ def number_game(numbers: list[int]) -> tuple[str, int]:
     The same happens on the next move.
     So, nobody picks any numbers to increase their score, which results in a Tie with both players having scores of 0.
     """
+
+    # def partition(array, begin, end):
+    #     pivot = begin 
+    #     for i in range(begin + 1, end + 1):
+    #         if array[i] <= array[begin]:
+    #             pivot += 1
+    #             array[i], array[pivot] = array[pivot], array[i]
+    #     array[pivot], array[begin] = array[begin], array[pivot]
+    #     return pivot
+
+    # def quicksort(array, begin=0, end=None):
+    #     if end is None:
+    #         end = len(array) - 1
+
+    #     def _quicksort(array, begin, end):
+    #         if begin >= end:
+    #             return
+    #         pivot = partition(array, begin, end)
+    #         _quicksort(array, begin, pivot-1)
+    #         _quicksort(array, pivot+1, end)
+
+    #     _quicksort(array, begin, end)
+    #     return array
+    
+    # quicksort(numbers)
 
     number_game_array = DynamicArray()
 

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 class Node:
     """
     A simple type to hold data and a next pointer
@@ -211,7 +210,6 @@ class DoublyLinkedList:
         
         self._size += 1 
 
-
     def remove_from_front(self) -> Any | None:
         """
         Remove the front node, and return the data it holds.
@@ -232,8 +230,8 @@ class DoublyLinkedList:
         else:
             self._tail = None
 
-        self._head = new_head #set the head to the new head
-        self._size -= 1 #if you remove something, list decreases 
+        self._head = new_head 
+        self._size -= 1 
         return head_data_to_remove
         
 
@@ -278,35 +276,6 @@ class DoublyLinkedList:
             current_node = current_node.get_prev() if self._reversed else current_node.get_next()
 
         return False
-
-    # def find_and_remove_element(self, elem: Any) -> bool:
-    #     """
-    #     Looks at the data inside each node of the list; if a match is
-    #     found, this node is removed from the linked list, and True is returned.
-    #     False is returned if no match is found.
-    #     Time complexity for full marks: O(N)
-    #     """
-
-    #     current_node = self._tail if self._reversed else self._head
-        
-    #     while current_node is not None:
-    #         if current_node.get_data() == elem:
-    #             if current_node.get_prev() is not None:
-    #                 current_node.get_prev().set_next(current_node.get_next())
-    #             else:
-    #                 self._head = current_node.get_next()
-                
-    #             if current_node.get_next() is not None:
-    #                 current_node.get_next().set_prev(current_node.get_prev()) 
-    #             else:
-    #                 self._tail = current_node.get_prev()
-                
-    #             self._size -= 1 
-    #             return True
-            
-    #         current_node = current_node.get_next()
-    
-    #     return False
 
     def find_and_remove_element(self, elem: Any) -> bool:
         """

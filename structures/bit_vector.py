@@ -319,11 +319,3 @@ class BitVector:
         """
         return self._num_bits
     
-    def initialise(self, size: int):
-        num_elemets = (size + self.BITS_PER_ELEMENT - 1) // self.BITS_PER_ELEMENT
-        self._data = DynamicArray()
-
-        for _ in range(num_elemets * 10):
-            self._data.append(0)
-
-        self._num_bits = size
