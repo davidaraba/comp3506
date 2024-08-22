@@ -43,12 +43,13 @@ class BitVector:
         """
         Resizes the dynamic array by doubling its capacity.
         """
-        new_capacity = self._data.get_size() * 2
+        size = self._data.get_size()
+        new_capacity = size * 2
         
         new_data = DynamicArray()
         for _ in range(new_capacity):
             new_data.append(0)
-        for i in range(self._data.get_size()):
+        for i in range(size):
             new_data[i] = self._data[i]
         self._data = new_data
 
@@ -263,7 +264,7 @@ class BitVector:
         if dist == 0 or self._num_bits == 0:
             return
 
-        dist = dist % self._num_bits  # Normalize rotation within the total number of bits
+        dist = dist % self._num_bits  # Normalise rotation within the total number of bits
 
         if dist > 0:
             self.__left_rotate(dist)
