@@ -37,7 +37,6 @@ class Node:
     def get_prev(self) -> Node | None:
         return self._prev
 
-
 class DoublyLinkedList:
     """
     Your doubly linked list code goes here.

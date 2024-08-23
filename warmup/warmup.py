@@ -215,37 +215,30 @@ def number_game(numbers: list[int]) -> tuple[str, int]:
     So, nobody picks any numbers to increase their score, which results in a Tie with both players having scores of 0.
     """
 
-    # def partition(array, begin, end):
-    #     pivot = begin 
-    #     for i in range(begin + 1, end + 1):
-    #         if array[i] <= array[begin]:
-    #             pivot += 1
-    #             array[i], array[pivot] = array[pivot], array[i]
-    #     array[pivot], array[begin] = array[begin], array[pivot]
-    #     return pivot
+    def partition(array, begin, end):
+        pivot = begin 
+        for i in range(begin + 1, end + 1):
+            if array[i] <= array[begin]:
+                pivot += 1
+                array[i], array[pivot] = array[pivot], array[i]
+        array[pivot], array[begin] = array[begin], array[pivot]
+        return pivot
 
-    # def quicksort(array, begin=0, end=None):
-    #     if end is None:
-    #         end = len(array) - 1
+    def quicksort(array, begin=0, end=None):
+        if end is None:
+            end = len(array) - 1
 
-    #     def _quicksort(array, begin, end):
-    #         if begin >= end:
-    #             return
-    #         pivot = partition(array, begin, end)
-    #         _quicksort(array, begin, pivot-1)
-    #         _quicksort(array, pivot+1, end)
+        def _quicksort(array, begin, end):
+            if begin >= end:
+                return
+            pivot = partition(array, begin, end)
+            _quicksort(array, begin, pivot-1)
+            _quicksort(array, pivot+1, end)
 
-    #     _quicksort(array, begin, end)
-    #     return array
+        _quicksort(array, begin, end)
+        return array
     
-    # quicksort(numbers)
-
-    number_game_array = DynamicArray()
-
-    for i in range(len(numbers)):
-        number_game_array.append(numbers[i])
-
-    number_game_array.sort()
+    quicksort(numbers)
 
     alice_score = bob_score = 0
     alice_turn = True
@@ -253,11 +246,11 @@ def number_game(numbers: list[int]) -> tuple[str, int]:
 
     for i in range(size, -1, -1): # Optimal is selecting biggest num regardless if even or odd
         if alice_turn:
-            if number_game_array[i] % 2 == 0: # If biggest num even and alice turn, add to alice score
-                alice_score += number_game_array[i]
+            if numbers[i] % 2 == 0: # If biggest num even and alice turn, add to alice score
+                alice_score += numbers[i]
         if not alice_turn:
-            if number_game_array[i] % 2 == 1:  # If biggest num odd and bob turn, add to bob score
-                bob_score += number_game_array[i] 
+            if numbers[i] % 2 == 1:  # If biggest num odd and bob turn, add to bob score
+                bob_score += numbers[i] 
         
         alice_turn = not alice_turn # Every iteration, change turns 
 

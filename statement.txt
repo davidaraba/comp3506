@@ -1,5 +1,10 @@
-Statement of Code Inspiration and Attribution
+Statement of Code Inspiration and Attribution - David Araba, s4809314
 
 In the development of the DynamicArray class for my project, I referenced and was inspired by a publicly available tutorial on YouTube titled "Learn Merge Sort in 13 minutes" by "BroCode" (URL: https://www.youtube.com/watch?v=3j0SWDX4AtU&t=522s). While the code I implemented was written independently, the underlying concepts, particularly the approach to merging, were influenced by the explanation provided in the video. I have adapted these ideas to suit the specific requirements of my assignment, ensuring that the implementation aligns with the constraints and goals of the project.
 
 In the implementation of the k_cool function within my warmup.py file, I included a modular_exponentiation function to efficiently compute large exponentiations under a modulus. The design of this function was inspired by an algorithm discussed on the Crypto Stack Exchange (URL: https://crypto.stackexchange.com/questions/75408/efficient-function-algorithm-method-to-do-modular-exponentiation).
+
+In the development of the quicksort function within my warmup.py file, I adapted the implementation from a discussion on Stack Overflow (URL: https://stackoverflow.com/questions/18262306/quicksort-with-python). The original code provided a clear and concise approach to implementing the quicksort algorithm in Python. I modified and adapted this code to fit the specific needs and constraints of my assignment while maintaining the core logic of the quicksort algorithm as presented.
+
+In the process of implementing the __left_shift and __right_shift methods in my BitVector class, I sought clarification on certain aspects of bit manipulation, particularly handling carry bits during shifts. I used ChatGPT, an AI language model, to help explain the logic and ensure the correct handling of carry bits when shifting bits left or right across different blocks of the BitVector.
+
