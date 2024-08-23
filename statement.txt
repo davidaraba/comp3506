@@ -8,3 +8,15 @@ In the development of the quicksort function within my warmup.py file, I adapted
 
 In the process of implementing the __left_shift and __right_shift methods in my BitVector class, I sought clarification on certain aspects of bit manipulation, particularly handling carry bits during shifts. I used ChatGPT, an AI language model, to help explain the logic and ensure the correct handling of carry bits when shifting bits left or right across different blocks of the BitVector.
 
+**David:** ChatGPT, can you briefly explain the logic behind bit rotation?
+
+**ChatGPT:** Absolutely, David! Bit rotation involves moving the bits of a binary number to the left or right, but instead of discarding the bits that move past the edge, you wrap them around to the opposite side. So, if you rotate a bit pattern to the left, the leftmost bit moves to the rightmost position, and vice versa for a right rotation. This operation is particularly useful when you need to manipulate bits in a cyclical manner, such as in cryptographic algorithms or data compression, where maintaining the integrity of all bits while shifting their positions is crucial.
+
+**David:** Can you briefly explain the concept of carry-over?
+
+**ChatGPT:** Sure, David! In binary arithmetic, a carry-over happens when the sum of two bits exceeds the value that a single bit can hold (which is 1). For example, when adding 1 and 1 in binary, the result is 10. The '0' stays in the current bit position, and the '1' is carried over to the next higher bit position. This carry-over is crucial in operations like addition, where it affects the final result across multiple bit positions, ensuring accurate computation.
+
+**David:** Can you briefly explain how to handle carry-over across multiple elements in an array?
+
+**ChatGPT:** Certainly, David! When dealing with carry-over across multiple elements in an array, especially during addition, you start by adding corresponding elements from the end of the array (like in regular addition). If the sum exceeds the maximum value for a single element (like 9 in decimal or 1 in binary), you retain the unit part in the current position and carry the excess to the next element on the left. This process continues until all elements are processed, and any remaining carry is added as a new element at the beginning if needed. This ensures the correct handling of overflow across the entire array.
+
