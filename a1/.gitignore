@@ -1,0 +1,11 @@
+
+a1/test_structures.py
+a1/test_warmup.py
+a1/test_kmers.py
+a1/test_structures.py
+a1/.DS_Store
+
+a1/structures/__pycache__
+a1/warmup/__pycache__
+a1/malloclabs/__pycache__
+a1/malloclabs/sample_dna.txt
