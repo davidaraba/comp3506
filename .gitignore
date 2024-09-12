@@ -6,3 +6,4 @@ test_structures.py
 # Ignore macOS system files
 .DS_Store
 
+__pycache__
