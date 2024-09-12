@@ -1,0 +1,8 @@
+# Ignore specific test files
+test_pathfinding.py
+test_problems.py
+test_structures.py
+
+# Ignore macOS system files
+.DS_Store
+
