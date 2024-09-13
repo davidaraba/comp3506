@@ -136,4 +136,43 @@ class PriorityQueue:
         destroyed and will not be used again (hence returning the underlying
         array back to the caller).
         """
+
+        n = self._arr.get_size()
+
+        for i in range(n // 2 - 1, -1, -1):
+            self._heapify(n, i)
+
+        for i in range(n - 1, 0, -1):
+            self._arr[0], self._arr[i] = self._arr[i], self._arr[0]
+            self._heapify(i, 0)
+
         return self._arr
+    
+    def _heapify(self, n: int, i: int):
+        largest = i 
+        left = 2 * i + 1 
+        right = 2 * i + 2
+
+        if left < n and self._arr[left] < self._arr[largest]:
+            largest = left
+        
+        if right < n and self._arr[right] < self._arr[largest]:
+            largest = right
+        
+        if largest != i:
+            self._arr[i], self._arr[largest] = self._arr[largest], self._arr[i]
+            self._heapify(n, largest)
+
+    def print_pq(self) -> None:
+        """
+        Prints the priority queue in array form.
+        """
+        print("Priority Queue in array form:")
+        arr = []
+        for i in range(self.get_size()):
+            entry = self._arr[i]
+            if entry is not None:
+                arr.append((entry.get_key()))
+            else:
+                arr.append(None)
+        print(arr)
