@@ -6,6 +6,7 @@ Joel Mackenzie and Vladimir Morozov
 
 from typing import Any
 from structures.util import Hashable
+from structures.util import object_to_byte_array
 
 class Entry(Hashable):
     """
@@ -67,6 +68,13 @@ class Entry(Hashable):
         assignment, your universe could be something like integers in
         [0, 2^32-1].
         """
+        key_value = object_to_byte_array(self._key)
+        hash_value = 0 
+
+        for byte in key_value:
+            hash_value = (hash_value * 31 + byte) % (2**32)
+        
+        return hash_value
 
 class Compound:
     """
