@@ -4,8 +4,11 @@ The University of Queensland
 Joel Mackenzie and Vladimir Morozov
 """
 
+import math
 from typing import Any
 from structures.bit_vector import BitVector
+from structures.util import object_to_byte_array
+
 
 class BloomFilter:
     """
@@ -35,23 +38,57 @@ class BloomFilter:
         # You should use max_keys to decide how many bits your bitvector
         # should have, and allocate it accordingly.
         self._data = BitVector()
+        self._max_keys = max_keys
+        self._fp = 0.01
+        self._bits = self._calculate_num_bits(max_keys, self._fp)
+        self._num_hash_functions = self._calculate_num_hash_functions(self._bits, self._max_keys)
+        # self._fp = self._calculate_false_positive(self._num_hash_functions, self._max_keys, self._bits)
+        self._capacity = self._data.allocate(self._bits)
+        self._num_inserted_keys = 0
         
-        # More variables here if you need, of course
+            
+    def _calculate_num_hash_functions(self, bits: int, keys: int) -> int:
+        num_hashes = (bits / keys) * math.log(2)
+        return math.ceil(num_hashes)
     
+    def _calculate_num_bits(self, keys, fp) -> int:
+        num_bits = (-keys * math.log(fp)) / ((math.log(2)) ** 2)
+        return math.ceil(num_bits)
+    
+    def _calculate_false_positive(self, hashes: int, keys: int, bits: int) -> float:
+        fp = (1- math.exp((-hashes * keys) // bits)) ** hashes
+        return fp 
+    
+    def _hash_function(self, key_bytes: bytes, index: int) -> int:
+        hash_value = 0
+
+        for bytes in key_bytes:
+            hash_value = (hash_value * 31 + bytes + index * 17) % (2**32)
+        
+        return hash_value
+        
     def __str__(self) -> str:
         """
         A helper that allows you to print a BloomFilter type
         via the str() method.
         This is not marked. <<<<
         """
-        pass
+        bits = ''.join(str(self._data.get_at(i)) for i in range(self._bits))
+        return f"BloomFilter: {bits}"
 
     def insert(self, key: Any) -> None:
         """
         Insert a key into the Bloom filter.
         Time complexity for full marks: O(1)
         """
-        pass
+        hash_key = object_to_byte_array(key)
+
+        for i in range(self._num_hash_functions):
+           hash_value = self._hash_function(hash_key, i)
+           index = hash_value % self._bits
+           self._data.set_at(index)
+        
+        self._num_inserted_keys += 1
 
     def contains(self, key: Any) -> bool:
         """
@@ -59,7 +96,16 @@ class BloomFilter:
         over k are set. False otherwise.
         Time complexity for full marks: O(1)
         """
-        pass
+        
+        hash_key = object_to_byte_array(key)
+
+        for i in range(self._num_hash_functions):
+           hash_value = self._hash_function(hash_key, i)
+           index = hash_value % self._bits
+           if self._data.get_at(index) != 1:
+               return False
+        
+        return True
 
     def __contains__(self, key: Any) -> bool:
         """
@@ -67,6 +113,7 @@ class BloomFilter:
         `if key in my_bloom_filter:`
         Time complexity for full marks: O(1)
         """
+        return self.contains(key)
 
     def is_empty(self) -> bool:
         """
@@ -81,5 +128,37 @@ class BloomFilter:
         BitVector can currently maintain.
         Time complexity for full marks: O(1)
         """
-        pass
+        return self._data.get_size()
+    
+    def print_filter(self) -> None:
+        """
+        A helper function that prints the current state of the BloomFilter's bits
+        as an array of 0s and 1s.
+        """
+        bits = [self._data.get_at(i) for i in range(self._bits)]
+        print("BloomFilter Bits:", bits)
+    
+    def calculate_actual_false_positive_rate(self) -> float:
+        """
+        Calculate the actual false positive rate based on the number of keys inserted.
+        """
+        m = self._bits  # Total number of bits in the bit vector
+        k = self._num_hash_functions  # Number of hash functions
+        n = self._num_inserted_keys  # Number of inserted keys
+
+        # If no keys are inserted, the FPR is 0
+        if n == 0:
+            return 0.0
+
+        # Using the FPR formula
+        actual_fpr = (1 - (1 - 1 / m) ** (k * n)) ** k
+        return actual_fpr
+    
+    def compare_fpr(self) -> None:
+        """
+        Print a comparison between the target FPR and the actual FPR.
+        """
+        actual_fpr = self.calculate_actual_false_positive_rate()
+        print(f"Target FPR: {self._fp}")
+        print(f"Actual FPR: {actual_fpr}")
 
