@@ -45,6 +45,7 @@ class BloomFilter:
         # self._fp = self._calculate_false_positive(self._num_hash_functions, self._max_keys, self._bits)
         self._capacity = self._data.allocate(self._bits)
         self._num_inserted_keys = 0
+        self._is_empty = True
         
             
     def _calculate_num_hash_functions(self, bits: int, keys: int) -> int:
@@ -88,6 +89,7 @@ class BloomFilter:
            index = hash_value % self._bits
            self._data.set_at(index)
         
+        self._is_empty = not self._is_empty
         self._num_inserted_keys += 1
 
     def contains(self, key: Any) -> bool:
@@ -120,7 +122,7 @@ class BloomFilter:
         Boolean helper to tell us if the structure is empty or not
         Time complexity for full marks: O(1)
         """
-        pass
+        return self._is_empty
 
     def get_capacity(self) -> int:
         """

@@ -46,21 +46,35 @@ class Map:
         if load_factor > 0.7:
             self._resize()
     
+    ## REFERENCE THIS 
     def _resize(self) -> None:
+        new_capacity = self._capacity * 2  # Double the capacity
+        new_buckets = DynamicArray()
+        new_buckets.allocate(new_capacity, None)  # Allocate new array with None for lazy initialization
 
-        # new_capacity = self._capacity * 2 
-        # new_buckets = DynamicArray()
-        # new_buckets.allocate(new_capacity, DoublyLinkedList())
-        
-        # for i in range(self._capacity):
-        #     buckets = self._buckets[i]
-        #     new_buckets[i] = buckets
-        
-        # self._capacity = new_capacity
-        # self._buckets = new_buckets
-        pass
-        
+        # Rehash all entries in the old buckets
+        for i in range(self._capacity):
+            bucket = self._buckets.get_at(i)
+            if bucket is not None and bucket.get_size() > 0:
+                current_node = bucket.get_head_node()
+                while current_node is not None:
+                    entry = current_node.get_data()
+                    new_index = entry.get_hash() % new_capacity
 
+                    # Lazy initialization: Create a new bucket (DoublyLinkedList) if it's None
+                    if new_buckets.get_at(new_index) is None:
+                        new_buckets.set_at(new_index, DoublyLinkedList())
+
+                    # Insert the entry into the appropriate bucket
+                    new_bucket = new_buckets.get_at(new_index)  # Get the correct bucket
+                    new_bucket.insert_to_back(entry)
+                    
+                    current_node = current_node.get_next()
+
+        # Update the map's capacity and buckets
+        self._capacity = new_capacity
+        self._buckets = new_buckets
+ 
     def insert(self, entry: Entry) -> Any | None:
         """
         Associate value v with key k for efficient lookups. If k already exists
