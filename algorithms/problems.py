@@ -68,8 +68,24 @@ def maybe_maybe_maybe(database: list[str], query: list[str]) -> list[str]:
     """
     answer = [] 
 
-    # DO THE THING
+    max_keys = len(database)
 
+    database_bloom = BloomFilter(max_keys)
+
+    # for ele in database:
+    #     database_bloom.insert(ele)
+    
+    # for item in query:
+    #     if database_bloom.contains(item):
+    #         answer.append(item)
+
+    for item in query:
+        database_bloom.insert(item)
+    
+    for ele in database:
+        if database_bloom.contains(ele):
+            answer.append(ele)
+    
     return answer
 
 
