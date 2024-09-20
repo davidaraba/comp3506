@@ -39,7 +39,7 @@ class Map:
         self._size = 0 
         self._buckets = DynamicArray()
         for _ in range(self._capacity):
-            self._buckets.allocate(self._capacity, None)
+            self._buckets.allocate(self._capacity, DoublyLinkedList())
 
     def _resize_if_needed(self) -> None:
         load_factor = self._size / self._capacity
@@ -50,7 +50,7 @@ class Map:
     def _resize(self) -> None:
         new_capacity = self._capacity * 2  # Double the capacity
         new_buckets = DynamicArray()
-        new_buckets.allocate(new_capacity, None)  # Allocate new array with None for lazy initialization
+        new_buckets.allocate(new_capacity, DoublyLinkedList())  # Allocate new array with None for lazy initialization
 
         # Rehash all entries in the old buckets
         for i in range(self._capacity):
@@ -61,9 +61,9 @@ class Map:
                     entry = current_node.get_data()
                     new_index = entry.get_hash() % new_capacity
 
-                    # Lazy initialization: Create a new bucket (DoublyLinkedList) if it's None
-                    if new_buckets.get_at(new_index) is None:
-                        new_buckets.set_at(new_index, DoublyLinkedList())
+                    # # Lazy initialization: Create a new bucket (DoublyLinkedList) if it's None
+                    # if new_buckets.get_at(new_index) is None:
+                    #     new_buckets.set_at(new_index, DoublyLinkedList())
 
                     # Insert the entry into the appropriate bucket
                     new_bucket = new_buckets.get_at(new_index)  # Get the correct bucket
@@ -85,8 +85,8 @@ class Map:
         hash_value = entry.get_hash() 
         index = hash_value % self._capacity
         
-        if self._buckets.get_at(index) is None:
-            self._buckets.set_at(index, DoublyLinkedList())
+        # if self._buckets.get_at(index) is None:
+        #     self._buckets.set_at(index, DoublyLinkedList())
 
         bucket = self._buckets.get_at(index)
         
