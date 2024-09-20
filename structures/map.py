@@ -136,7 +136,8 @@ class Map:
             return None 
         
         bucket = self._buckets.get_at(index)
-        success = bucket.find_and_remove_element(Entry(key, None))
+        entry = Entry(key, None)
+        success = bucket.find_and_remove_element(entry)
         if success:
             self._size -= 1
 
@@ -152,11 +153,15 @@ class Map:
         if self._buckets.get_at(index) is None:
             return None
         
-        bucket = self._buckets[index]
+        bucket = self._buckets.get_at(index)
+        entry = Entry(key, None)
 
-        found_element = bucket.find_and_return_element(Entry(key, None))
+        found_element = bucket.find_and_return_element(entry)
+        
+        if found_element is None:
+            return None
+        
         return found_element.get_value()
-        # print("found element is:",found_element.get_value())
 
     def __getitem__(self, key: Any) -> Any | None:
         """
