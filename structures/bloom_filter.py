@@ -139,28 +139,5 @@ class BloomFilter:
         """
         bits = [self._data.get_at(i) for i in range(self._bits)]
         print("BloomFilter Bits:", bits)
-    
-    def calculate_actual_false_positive_rate(self) -> float:
-        """
-        Calculate the actual false positive rate based on the number of keys inserted.
-        """
-        m = self._bits  # Total number of bits in the bit vector
-        k = self._num_hash_functions  # Number of hash functions
-        n = self._num_inserted_keys  # Number of inserted keys
 
-        # If no keys are inserted, the FPR is 0
-        if n == 0:
-            return 0.0
-
-        # Using the FPR formula
-        actual_fpr = (1 - (1 - 1 / m) ** (k * n)) ** k
-        return actual_fpr
-    
-    def compare_fpr(self) -> None:
-        """
-        Print a comparison between the target FPR and the actual FPR.
-        """
-        actual_fpr = self.calculate_actual_false_positive_rate()
-        print(f"Target FPR: {self._fp}")
-        print(f"Actual FPR: {actual_fpr}")
 

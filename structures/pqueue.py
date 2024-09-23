@@ -86,10 +86,11 @@ class PriorityQueue:
         self._arr[0] = self._arr[self.get_size() - 1] # Swap min with last element (last element will be leaf with no child)
         self._arr.remove_at(self.get_size() - 1) # Remove last element which is now the root 
 
-        cur = 1
+        # cur = 1
+        cur = 0
         while cur < self.get_size():
-            left = cur * 2
-            right = cur * 2 + 1
+            left = 2 * cur + 1 # +1
+            right = 2 * cur + 2 # +2
 
             smallest = cur
             if left < self.get_size() and self._arr[smallest].get_key() > self._arr[left].get_key():
@@ -127,8 +128,8 @@ class PriorityQueue:
         only O(1) extra space.
         """
         
-        self._arr.build_from_list(input_list)
-        
+        self._arr = input_list
+                
         n = self._arr.get_size()
 
         for i in range(n // 2 - 1, -1, -1):

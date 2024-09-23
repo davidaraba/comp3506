@@ -35,7 +35,7 @@ class Map:
         You are free to make any changes you find suitable in this function
         to initialise your map.
         """
-        self._capacity = 8 
+        self._capacity = 1011
         self._size = 0 
         self._buckets = DynamicArray()
         for _ in range(self._capacity):
@@ -186,14 +186,43 @@ class Map:
 
     def print_map(self) -> None:
         """
-        Prints out all the key-value pairs in the map.
+        Prints out all the key-value pairs in the map in array form and
+        also prints out all the keys that map to the same index.
         """
-        print("Map contents:")
+        map_contents = []
+        index_key_map = [None] * self._capacity  # Create a list of None for each index
+
         for i in range(self._capacity):
             bucket = self._buckets.get_at(i)
             if bucket is not None and bucket.get_size() > 0:
                 current_node = bucket.get_head_node()
                 while current_node is not None:
                     entry = current_node.get_data()
-                    print(f"Key: {entry.get_key()}, Value: {entry.get_value()}")
+                    key = entry.get_key()
+                    value = entry.get_value()
+                    map_contents.append((key, value))
+
+                    # Initialize a DoublyLinkedList if None at this index
+                    if index_key_map[i] is None:
+                        index_key_map[i] = DoublyLinkedList()
+                    
+                    # Insert the key into the list for this index
+                    index_key_map[i].insert_to_back(key)
+
                     current_node = current_node.get_next()
+
+        # Print all key-value pairs in the map
+        print("Key-Value Pairs in Map:")
+        print(map_contents)
+
+        # Print keys that map to the same index
+        print("\nKeys that map to the same index:")
+        for i in range(self._capacity):
+            if index_key_map[i] is not None and index_key_map[i].get_size() > 1:
+                # Collect the keys stored in the linked list for this index
+                current_node = index_key_map[i].get_head_node()
+                keys_at_index = []
+                while current_node is not None:
+                    keys_at_index.append(current_node.get_data())
+                    current_node = current_node.get_next()
+                print(f"Index {i}: {keys_at_index}")
