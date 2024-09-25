@@ -36,9 +36,39 @@ def bfs_traversal(
     visited_order = DynamicArray()
     # Stores the path from the origin to the goal
     path = DynamicArray()
+    # Queue
+    queue = DynamicArray() 
+    # Append origin as first thing that will be visitited
+    queue.append(origin)
 
-    # ALGO GOES HERE
+    visited = DynamicArray()
 
+    num_vertices = len(graph._nodes)
+
+    visited.allocate(num_vertices, False)
+    parent = DynamicArray()
+    parent.allocate(num_vertices, None)
+
+    visited[origin] = True
+    while queue.get_size() > 0:
+        current_node = queue[0]
+        queue.remove_at(0)
+
+        visited_order.append(current_node)
+
+        if current_node == goal:
+            pass
+
+                    
+        current_node_neighbours = graph.get_neighbours(current_node)
+        
+        for neighbour in current_node_neighbours:
+            neighbour_id = neighbour.get_id()
+            if not visited[neighbour_id]:
+                queue.append(neighbour_id)
+                visited[neighbour_id] = True
+                parent[neighbour_id] = current_node
+            
     # Return the path and the visited nodes list
     return (path, visited_order)
 
