@@ -57,7 +57,12 @@ def bfs_traversal(
         visited_order.append(current_node)
 
         if current_node == goal:
-            pass
+            while current_node is not None:
+                path.append(current_node)
+                current_node = parent[current_node]
+            
+            #reverse
+            break
 
                     
         current_node_neighbours = graph.get_neighbours(current_node)
