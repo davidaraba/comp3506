@@ -61,10 +61,12 @@ def bfs_traversal(
                 path.append(current_node)
                 current_node = parent[current_node]
             
-            #reverse
+            for i in range(path.get_size() // 2):
+                temp = path[i]
+                path[i] = path[path.get_size() - 1 - i]
+                path[path.get_size() - 1 - i] = temp
             break
 
-                    
         current_node_neighbours = graph.get_neighbours(current_node)
         
         for neighbour in current_node_neighbours:
