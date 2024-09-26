@@ -107,7 +107,7 @@ def dijkstra_traversal(graph: Graph, origin: int) -> DynamicArray:
     distances = DynamicArray()
     # Initialise distances: set all to infinity, except the origin which is 0
     distances.allocate(num_vertices, float('inf'))
-    distances.set_at(origin, 0)
+    distances[origin] = 0
 
     # Will keep track of what edges visited
     visited = DynamicArray() 
@@ -115,11 +115,31 @@ def dijkstra_traversal(graph: Graph, origin: int) -> DynamicArray:
     visited.allocate(num_vertices, False)
 
     while not queue.is_empty():
-        pass
         
+        current_node = queue.get_min_value()
+        queue.remove_min()
 
-    # ALGO GOES HERE
+        if visited[current_node]:
+            continue
+        
+        visited[current_node] = True
+          
+        current_node_neighbour = graph.get_neighbours(current_node)
 
+        for neighbour_node, edge_weight in current_node_neighbour:
+            neighbour_id = neighbour_node.get_id()
+            # Potential new shortest path from the origin to neighbour_id via current_node
+            new_distance = distances[current_node] + edge_weight
+            
+            if new_distance < distances[neighbour_id]: 
+                distances[neighbour_id] = new_distance
+                queue.insert(new_distance, neighbour_id)
+          
+    for node_id in range(num_vertices):
+        if distances[node_id] != float('inf'):
+            valid_locations.append(Entry(key = node_id, value= distances[node_id]))
+            # valid_locations.append(Entry(key = current_distance, value= current_node))
+            
     # Return the DynamicArray containing Entry types
     return valid_locations
 

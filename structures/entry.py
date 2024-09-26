@@ -50,6 +50,18 @@ class Entry(Hashable):
         than other. Relies on keys having __lt__ implemented.
         """
         return self.get_key() < other.get_key()
+    
+    def __str__(self) -> str:
+        """
+        Return a string representation of the Entry object, showing key and value.
+        """
+        return f"({self._key}, {self._value})"
+
+    def __repr__(self) -> str:
+        """
+        Return a string representation for the Entry object, mainly used for debugging.
+        """
+        return self.__str__()
 
     def get_hash(self) -> int:
         """
