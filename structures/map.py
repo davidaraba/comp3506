@@ -38,8 +38,7 @@ class Map:
         self._capacity = 1011
         self._size = 0 
         self._buckets = DynamicArray()
-        for _ in range(self._capacity):
-            self._buckets.allocate(self._capacity, None)
+        self._buckets.allocate(self._capacity, None)
 
     def _resize_if_needed(self) -> None:
         load_factor = self._size / self._capacity

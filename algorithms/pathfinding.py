@@ -97,6 +97,26 @@ def dijkstra_traversal(graph: Graph, origin: int) -> DynamicArray:
     graphs. It should of course work where edge weights are uniform.
     """
     valid_locations = DynamicArray() # This holds your answers
+    num_vertices = len(graph._nodes)
+
+    # First thing in queue is origin with distance 0
+    queue = PriorityQueue()
+    queue.insert(0, origin)
+    
+    # Will keep track of the shortest distance of each node from the origin
+    distances = DynamicArray()
+    # Initialise distances: set all to infinity, except the origin which is 0
+    distances.allocate(num_vertices, float('inf'))
+    distances.set_at(origin, 0)
+
+    # Will keep track of what edges visited
+    visited = DynamicArray() 
+    # Initially false
+    visited.allocate(num_vertices, False)
+
+    while not queue.is_empty():
+        pass
+        
 
     # ALGO GOES HERE
 
