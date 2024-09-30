@@ -42,9 +42,7 @@ class BloomFilter:
         self._fp = 0.01
         self._bits = self._calculate_num_bits(max_keys, self._fp)
         self._num_hash_functions = self._calculate_num_hash_functions(self._bits, self._max_keys)
-        # self._fp = self._calculate_false_positive(self._num_hash_functions, self._max_keys, self._bits)
         self._capacity = self._data.allocate(self._bits)
-        self._num_inserted_keys = 0
         self._is_empty = True
         
             
@@ -56,18 +54,31 @@ class BloomFilter:
         num_bits = (-keys * math.log(fp)) / ((math.log(2)) ** 2)
         return math.ceil(num_bits)
     
-    def _calculate_false_positive(self, hashes: int, keys: int, bits: int) -> float:
-        fp = (1- math.exp((-hashes * keys) // bits)) ** hashes
-        return fp 
-    
-    def _hash_function(self, key_bytes: bytes, index: int) -> int:
+    def _hash_function(self, key_bytes: bytes, prime: int, mod: int) -> int:
         hash_value = 0
 
         for bytes in key_bytes:
-            hash_value = (hash_value * 31 + bytes + index * 17) % (2**32)
+            hash_value = (hash_value * prime + bytes) % mod
         
         return hash_value
-        
+    
+    def _generate_k_hashes(self, key_bytes: bytes) -> list:
+        """
+        Use the Kirsch-Mitzenmacher optimization to generate k hash values
+        using two base polynomial hash functions.
+        """
+
+        prime1 = 31
+        prime2 = 37
+        mod = 10**9 + 7 
+
+        # Generate two base hashes using polynomial hash with different primes
+        h1 = self._hash_function(key_bytes, prime1, mod)
+        h2 = self._hash_function(key_bytes, prime2, mod)
+
+        # Generate k hashes using the formula: h_i(x) = h1(x) + i * h2(x)
+        return [(h1 + i * h2) % self._bits for i in range(self._num_hash_functions)]
+
     def __str__(self) -> str:
         """
         A helper that allows you to print a BloomFilter type
@@ -83,14 +94,12 @@ class BloomFilter:
         Time complexity for full marks: O(1)
         """
         hash_key = object_to_byte_array(key)
+        hash_values = self._generate_k_hashes(hash_key)
 
-        for i in range(self._num_hash_functions):
-           hash_value = self._hash_function(hash_key, i)
-           index = hash_value % self._bits
-           self._data.set_at(index)
-        
-        self._is_empty = not self._is_empty
-        self._num_inserted_keys += 1
+        for index in hash_values:
+            self._data.set_at(index)
+
+        self._is_empty = False
 
     def contains(self, key: Any) -> bool:
         """
@@ -100,13 +109,11 @@ class BloomFilter:
         """
         
         hash_key = object_to_byte_array(key)
+        hash_values = self._generate_k_hashes(hash_key)
 
-        for i in range(self._num_hash_functions):
-           hash_value = self._hash_function(hash_key, i)
-           index = hash_value % self._bits
-           if self._data.get_at(index) != 1:
-               return False
-        
+        for index in hash_values:
+            if self._data.get_at(index) != 1:
+                return False
         return True
 
     def __contains__(self, key: Any) -> bool:
