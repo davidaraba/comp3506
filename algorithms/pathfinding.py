@@ -107,7 +107,7 @@ def dijkstra_traversal(graph: Graph, origin: int) -> DynamicArray:
     distances = DynamicArray()
     # Initialise distances: set all to infinity, except the origin which is 0
     distances.allocate(num_vertices, float('inf'))
-    distances[origin] = 0
+    distances[origin] = 0 # map maybe
 
     # Will keep track of what edges visited
     visited = DynamicArray() 
