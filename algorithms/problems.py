@@ -90,8 +90,6 @@ def maybe_maybe_maybe(database: list[str], query: list[str]) -> list[str]:
     # return answer
     print(answer)
 
-
-
 def dora(graph: Graph, start: int, symbol_sequence: str,
          ) -> tuple[BitVector, list[Entry]]:
     """
@@ -139,10 +137,10 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
 
     return (coded_sequence, codebook)
 
-def compounds_overlap(compound_1: Compound, compound_2: Compound) -> bool:
-        radius_sum = compound_1.get_radius() + compound_2.get_radius()
+def compounds_overlap(compound1: Compound, compound2: Compound) -> bool:
+        radius_sum = compound1.get_radius() + compound2.get_radius()
         radius_sum_squared = radius_sum ** 2 
-        cord1, cord2 = compound_1.get_coordinates(), compound_2.get_coordinates()
+        cord1, cord2 = compound1.get_coordinates(), compound2.get_coordinates()
         x_dist_squared = (cord2[0] - cord1[0]) ** 2
         y_dist_squared = (cord2[1] - cord1[1]) ** 2
         
@@ -201,7 +199,6 @@ def chain_reaction(compounds: list[Compound]) -> int:
 
     return maximal_compound_id
               
-
 def labyrinth(offers: list[Offer]) -> tuple[int, int]:
     """
     Task 3.4: Labyrinth
