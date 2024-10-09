@@ -45,7 +45,6 @@ class Map:
         if load_factor > 0.7:
             self._resize()
     
-    ## REFERENCE THIS 
     def _resize(self) -> None:
         new_capacity = self._capacity * 2  # Double the capacity
         new_buckets = DynamicArray()
@@ -60,7 +59,7 @@ class Map:
                     entry = current_node.get_data()
                     new_index = entry.get_hash() % new_capacity
 
-                    # Lazy initialization: Create a new bucket (DoublyLinkedList) if it's None
+                    # Lazy initialisation: Create a new bucket (DoublyLinkedList) if it's None
                     if new_buckets.get_at(new_index) is None:
                         new_buckets.set_at(new_index, DoublyLinkedList())
 

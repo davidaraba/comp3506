@@ -1,0 +1,18 @@
+
+chatGPT was used to help with the resizing function in the map class. 
+
+David: I'm stuck with rehashing a map when it's full. I'm stuck on the part where I have to rehash the entries to the new buckets. Can you explain the general idea?
+
+chatGPT: Iterate over each existing bucket, and for every node in those buckets, calculate its new index in the resized array. If the slot at that index is empty, initialize it with a new doubly linked list, 
+         then insert the node’s data into the appropriate list at that new index.
+
+chatGPT was also used to explain how to backtrace in the bfs function.
+
+David: I saw online yo create a parent array to backtrace for bfs path. My understanding is to use the current node and use that as an index or something for the parent? 
+       How do I correctly trace back the path from the goal to the origin using the parent array?
+
+chatGPT: To implement the `parent` array in BFS, initialize it with `None` for all nodes. As you visit each node, set the `parent` of its unvisited neighbors to the current node. 
+         After reaching the goal, backtrack using the `parent` array to trace and reconstruct the path from the goal to the origin.
+
+The "def _generate_k_hashes(self, key_bytes: bytes) -> list:" in the bloom filter clasa was adapted from: https://stackoverflow.com/questions/70963247/bloom-filters-with-the-kirsch-mitzenmacher-optimization. 
+I learned about Kirsch Mitzenmacher's optimisation technique from here and then implmeneted the same thing in my bloom filter. 

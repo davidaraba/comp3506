@@ -79,16 +79,8 @@ def maybe_maybe_maybe(database: list[str], query: list[str]) -> list[str]:
     for item in query:
         if database_bloom.contains(item):
             answer.append(item)
-
-    # for item in query:
-    #     database_bloom.insert(item)
-    
-    # for item in database:
-    #     if database_bloom.contains(item):
-    #         answer.append(item)
-    
-    # return answer
-    print(answer)
+            
+    return answer
 
 def dora(graph: Graph, start: int, symbol_sequence: str,
          ) -> tuple[BitVector, list[Entry]]:
