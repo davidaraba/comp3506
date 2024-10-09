@@ -79,7 +79,7 @@ def maybe_maybe_maybe(database: list[str], query: list[str]) -> list[str]:
     for item in query:
         if database_bloom.contains(item):
             answer.append(item)
-            
+
     return answer
 
 def dora(graph: Graph, start: int, symbol_sequence: str,
@@ -130,13 +130,12 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
     return (coded_sequence, codebook)
 
 def compounds_overlap(compound1: Compound, compound2: Compound) -> bool:
-        radius_sum = compound1.get_radius() + compound2.get_radius()
-        radius_sum_squared = radius_sum ** 2 
-        cord1, cord2 = compound1.get_coordinates(), compound2.get_coordinates()
-        x_dist_squared = (cord2[0] - cord1[0]) ** 2
-        y_dist_squared = (cord2[1] - cord1[1]) ** 2
+        radius_squared = compound1.get_radius() ** 2
+        x1,y1 = compound1.get_coordinates()
+        x2,y2 = compound2.get_coordinates()
+        distance_squared = (x2 - x1) ** 2 + (y2 - y1) ** 2
         
-        return (x_dist_squared + y_dist_squared) <= radius_sum_squared
+        return distance_squared <= radius_squared
 
 def chain_reaction(compounds: list[Compound]) -> int:
     """
@@ -162,8 +161,12 @@ def chain_reaction(compounds: list[Compound]) -> int:
             @compounds@ has up to 10'000 elements
 
     """
+
+    if not compounds:
+        return -1
+    
     maximal_compound_count = 0 
-    maximal_compound_id = -1 
+    maximal_compound_id = compounds[0].get_compound_id()
     
     for i, compound in enumerate(compounds):
         queue = DynamicArray()
@@ -174,20 +177,20 @@ def chain_reaction(compounds: list[Compound]) -> int:
         local_impact_count = 1
 
         while not queue.is_empty():
-            current_compound = queue[0]
-            queue.remove_at(0)
-
+            current_compound = queue.remove_at(0)
+            
             for j, neighbour in enumerate(compounds):
-                if compounds_overlap(current_compound, neighbour) and visited[j] == False:
+                if not visited[j] and compounds_overlap(current_compound, neighbour):
                     visited[j] = True
                     queue.append(neighbour)
                     local_impact_count += 1
         
-        if local_impact_count > maximal_compound_count or \
-            (local_impact_count == maximal_compound_count and \
-                compound.get_compound_id() < maximal_compound_id):
+        if local_impact_count > maximal_compound_count:
             maximal_compound_count = local_impact_count
             maximal_compound_id = compound.get_compound_id()
+        elif local_impact_count == maximal_compound_count:
+            if compound.get_compound_id() < maximal_compound_id:
+                maximal_compound_id = compound.get_compound_id()
 
     return maximal_compound_id
               
