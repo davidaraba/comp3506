@@ -129,14 +129,6 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
 
     return (coded_sequence, codebook)
 
-def compounds_overlap(compound1: Compound, compound2: Compound) -> bool:
-        radius_squared = compound1.get_radius() ** 2
-        x1,y1 = compound1.get_coordinates()
-        x2,y2 = compound2.get_coordinates()
-        distance_squared = (x2 - x1) ** 2 + (y2 - y1) ** 2
-        
-        return distance_squared <= radius_squared
-
 def chain_reaction(compounds: list[Compound]) -> int:
     """
     Task 3.3: Chain Reaction
@@ -161,6 +153,14 @@ def chain_reaction(compounds: list[Compound]) -> int:
             @compounds@ has up to 10'000 elements
 
     """
+
+    def compounds_overlap(compound1: Compound, compound2: Compound) -> bool:
+        radius_squared = compound1.get_radius() ** 2
+        x1,y1 = compound1.get_coordinates()
+        x2,y2 = compound2.get_coordinates()
+        distance_squared = (x2 - x1) ** 2 + (y2 - y1) ** 2
+        
+        return distance_squared <= radius_squared
 
     if not compounds:
         return -1
@@ -193,7 +193,7 @@ def chain_reaction(compounds: list[Compound]) -> int:
                 maximal_compound_id = compound.get_compound_id()
 
     return maximal_compound_id
-              
+
 def labyrinth(offers: list[Offer]) -> tuple[int, int]:
     """
     Task 3.4: Labyrinth
@@ -228,11 +228,30 @@ def labyrinth(offers: list[Offer]) -> tuple[int, int]:
             0 <= k <= 10^42
 
     """
+    
+    def valid_offer(offer: Offer) -> bool:
+        n = offer.get_num_nodes()
+        m = offer.get_num_edges()
+        k = offer.get_diameter()
+
+        if (m >= n - 1 and m < (n * (n - 1)) /2 and k > n - m):
+            return True
+    
+        return False
+            
     best_offer_id = -1
     best_offer_cost = float('inf')
 
-    # DO THE THING
-
+    for offer in offers:
+        if valid_offer(offer):
+            if offer.get_cost() < best_offer_cost:
+                best_offer_cost = offer.get_cost()
+                best_offer_id = offer.get_offer_id()
+            elif offer.get_cost() == best_offer_cost:
+                if offer.get_offer_id() < best_offer_id:
+                    best_offer_id = offer.get_offer_id()
+    
+    # print(best_offer_id, best_offer_cost)
     return (best_offer_id, best_offer_cost)
 
 
