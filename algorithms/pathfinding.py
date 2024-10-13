@@ -168,9 +168,46 @@ def dfs_traversal(
     visited_order = DynamicArray()
     # Stores the path from the origin to the goal
     path = DynamicArray()
+    # Stack for DFS
+    stack = DynamicArray() 
+    # Append origin to begin DFS
+    stack.append(origin)
 
-    # ALGO GOES HERE
+    visited = DynamicArray()
+    
+    num_vertices = len(graph._nodes)
+    visited.allocate(num_vertices, False)
+    parent = DynamicArray()
+    parent.allocate(num_vertices, None)
 
+    visited[origin] = True
+
+    while stack.get_size() > 0:
+        current_node = stack[stack.get_size() - 1]
+        stack.remove_at(stack.get_size() - 1)
+        
+        visited_order.append(current_node)
+
+        if current_node == goal:
+            while current_node is not None:
+                path.append(current_node)
+                current_node = parent[current_node]
+            
+            for i in range(path.get_size() // 2):
+                temp = path[i]
+                path[i] = path[path.get_size() - 1 - i]
+                path[path.get_size() - 1 - i] = temp
+            break
+        
+        current_node_neighbours = graph.get_neighbours(current_node)
+
+        for neighbour in current_node_neighbours:
+            neighbour_id = neighbour.get_id()
+            if not visited[neighbour_id]:
+                stack.append(neighbour_id)
+                visited[neighbour_id] = True
+                parent[neighbour_id] = current_node
+                
     # Return the path and the visited nodes list
     return (path, visited_order)
 
