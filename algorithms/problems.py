@@ -126,32 +126,55 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
     """
     codebook = []
 
-    num_vertices = len(graph._nodes)
-    visited = [False] * num_vertices
-    visited[start] = True
+    visited = Map()
     gene_count = Map()
 
-    queue = DynamicArray()
-    queue.append(start)
-
+    queue = DoublyLinkedList()
+    queue.insert_to_back(start)
+    visited.insert_kv(start, True)
+    
     while queue.get_size() > 0:
-        current_node = queue.remove_at(0)
-        current_symbol = graph.get_node(current_node).get_data()
-        current_symbol_count = gene_count.find(current_symbol)
+        current_node_id = queue.remove_from_front()
+        current_node = graph.get_node(current_node_id)
+        current_symbol = current_node.get_data()
 
-        if current_symbol_count:
-            gene_count.insert(Entry(current_symbol, current_symbol_count + 1))
+        count = gene_count.find(current_symbol)
+        
+        if count is not None:
+            gene_count.insert_kv(current_symbol, count + 1)
         else:
-            gene_count.insert(Entry(current_symbol, 1))
-
-        current_node_neigbours = graph.get_neighbours(current_node)
-
-        for neighbour in current_node_neigbours:
+            gene_count.insert(current_symbol, 1)
+        
+        neighbours = graph.get_neighbours(current_node_id)
+        
+        for neighbour in neighbours:
             neighbour_id = neighbour.get_id()
-            if not visited[neighbour_id]:
-                queue.append(neighbour_id)
-                visited[neighbour_id] = True
-            
+            if not visited.find(neighbour_id):
+                queue.insert_to_back(neighbour_id)
+                visited.insert_kv(neighbour_id, True)
+    
+    huffman_pq = PriorityQueue()
+
+    for genes in gene_count.iterate_over_entries():
+        symbol = genes.get_key()
+        frequency = genes.get_value()
+
+        huffman_node = HuffmanNode(symbol, frequency)
+        huffman_pq.insert(frequency, huffman_node)
+    
+    if huffman_pq.is_empty():
+        root = None
+    else:
+        while huffman_pq.get_size() > 1:
+            left_node = huffman_pq.remove_min()
+            right_node = huffman_pq.remove_min()
+            combined_frequency = left_node._frequency + right_node._frequency 
+            new_node = HuffmanNode(None, combined_frequency)
+            new_node._left = left_node
+            new_node._right = right_node
+            huffman_pq.insert(combined_frequency, new_node)
+        root = huffman_pq.remove_min()
+
     return (coded_sequence, codebook)
 
 def chain_reaction(compounds: list[Compound]) -> int:

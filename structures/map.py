@@ -181,7 +181,16 @@ class Map:
         Time complexity for full marks: O(1)
         """
         return self._size == 0 
-
+    
+    def iterate_over_entries(self):
+        for i in range(self._capacity):
+            bucket = self._buckets.get_at(i)
+            if bucket is not None:
+                current_node = bucket.get_head_node()
+                while current_node is not None:
+                    yield current_node.get_data()
+                    current_node = current_node.get_next()
+                    
     def print_map(self) -> None:
         """
         Prints out all the key-value pairs in the map in array form and
