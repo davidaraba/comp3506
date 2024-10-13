@@ -34,6 +34,7 @@ from structures.pqueue import PriorityQueue
 from structures.bloom_filter import BloomFilter
 from structures.util import Hashable
 import math
+from structures.huffman_node import HuffmanNode
 
 
 
@@ -125,8 +126,32 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
     """
     codebook = []
 
-    # DO THE THING
+    num_vertices = len(graph._nodes)
+    visited = [False] * num_vertices
+    visited[start] = True
+    gene_count = Map()
 
+    queue = DynamicArray()
+    queue.append(start)
+
+    while queue.get_size() > 0:
+        current_node = queue.remove_at(0)
+        current_symbol = graph.get_node(current_node).get_data()
+        current_symbol_count = gene_count.find(current_symbol)
+
+        if current_symbol_count:
+            gene_count.insert(Entry(current_symbol, current_symbol_count + 1))
+        else:
+            gene_count.insert(Entry(current_symbol, 1))
+
+        current_node_neigbours = graph.get_neighbours(current_node)
+
+        for neighbour in current_node_neigbours:
+            neighbour_id = neighbour.get_id()
+            if not visited[neighbour_id]:
+                queue.append(neighbour_id)
+                visited[neighbour_id] = True
+            
     return (coded_sequence, codebook)
 
 def chain_reaction(compounds: list[Compound]) -> int:
