@@ -7,6 +7,7 @@ Joel Mackenzie and Vladimir Morozov
 from typing import Any
 from structures.dynamic_array import DynamicArray
 
+
 class BitVector:
     """
     A compact storage for bits that uses DynamicArray under the hood.
@@ -54,14 +55,14 @@ class BitVector:
         ints_required = -(bits_desired // -self.BITS_PER_ELEMENT)
         self._data.allocate(ints_required, 0)
         self._size = bits_desired
-        
+
         ptr = bits_desired % self.BITS_PER_ELEMENT
 
         if ptr == 0:
             self._right_offset = -1
         else:
-            self._right_offset = self.BITS_PER_ELEMENT - ptr - 1 
-        
+            self._right_offset = self.BITS_PER_ELEMENT - ptr - 1
+
     def get_at(self, index: int) -> int | None:
         """
         Get bit at the given index.
@@ -110,7 +111,7 @@ class BitVector:
         if state is 0, set the bit to 0, otherwise set the bit to 1.
         Do not modify the vector if the index is out of bounds.
         """
-        
+
         if index < 0 or index >= self._size:
             return
         if state != 0:
@@ -167,9 +168,9 @@ class BitVector:
         for integer in self._data:
             if integer is None:
                 break
-            byte_data.extend(integer.to_bytes(self.BYTES_PER_ELEMENT, byteorder='big'))
+            byte_data.extend(integer.to_bytes(
+                self.BYTES_PER_ELEMENT, byteorder='big'))
         return bytes(byte_data)
-
 
     def from_byte_arr(self, byte_data: bytes) -> None:
         """

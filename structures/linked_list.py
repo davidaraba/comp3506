@@ -120,7 +120,7 @@ class DoublyLinkedList:
         cur = self._tail
         if cur is not None:
             cur.set_data(data)
-    
+
     def insert_to_front(self, data: Any) -> None:
         """
         Insert a new Node containing this data to the head of the LL
@@ -155,9 +155,9 @@ class DoublyLinkedList:
         """
         if self._size == 0:
             return None
-        
+
         cur = self._head
-        
+
         if self._size == 1:
             self._head = None
             self._tail = None
@@ -177,7 +177,7 @@ class DoublyLinkedList:
             return None
 
         cur = self._tail
-        
+
         if self._size == 1:
             self._head = None
             self._tail = None
@@ -213,8 +213,6 @@ class DoublyLinkedList:
             cur = cur.get_next()
         return None
 
-
-
     def find_and_remove_element(self, elem: Any) -> bool:
         """
         Finds, removes, and returns the first instance of elem
@@ -234,7 +232,7 @@ class DoublyLinkedList:
             self._head = None
             self._tail = None
             self._size = 0
-            return True 
+            return True
         # OK: A "regular" case then
         nxt = cur.get_next()
         prv = cur.get_prev()
@@ -252,4 +250,3 @@ class DoublyLinkedList:
         else:
             self.remove_from_back()
         return True
-

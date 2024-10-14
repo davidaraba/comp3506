@@ -136,14 +136,16 @@ class Graph:
         self._weighted = weighted
         if not self._weighted:
             for i in range(len(self._edges)):
-                self._edges[i] = [((e, 1) if type(e) == int else e) for e in self._edges[i]]
+                self._edges[i] = [((e, 1) if type(e) == int else e)
+                                  for e in self._edges[i]]
         self.__check_graph()
 
     def __check_graph(self) -> None:
         for node_neighbours in self._edges:
             for neighbour, _ in node_neighbours:
                 if neighbour < 0 or neighbour >= len(self._nodes):
-                    raise ValueError(f"No node has ID {neighbour} but adjacency list refers to it.")
+                    raise ValueError(
+                        f"No node has ID {neighbour} but adjacency list refers to it.")
 
     def get_node(self, index: int) -> Node | None:
         try:
@@ -186,7 +188,8 @@ class Graph:
             if len(chunks) == 1:
                 continue
             if len(chunks) > 2:
-                raise ValueError(f"Can not interpret line {contents} in file {path}")
+                raise ValueError(
+                    f"Can not interpret line {contents} in file {path}")
             [node, neighbours] = chunks
             node = int(node.strip())
             neighbours = neighbours.strip().split()
@@ -197,7 +200,8 @@ class Graph:
                 weighted_set = True
 
             if weighted:
-                neighbours = [(int(item.split(",")[0].strip()), int(item.split(",")[1].strip())) for item in neighbours]
+                neighbours = [(int(item.split(",")[0].strip()), int(
+                    item.split(",")[1].strip())) for item in neighbours]
             else:
                 neighbours = [(int(item.strip()), 1) for item in neighbours]
             adjacency[node] = neighbours
@@ -211,7 +215,9 @@ class Graph:
             path = Path(path)
 
         lines = [
-            f"{ix}: " + " ".join([(f"{e},{w}" if self._weighted else f"{e}") for e, w in adj])
+            f"{ix}: " +
+            " ".join([(f"{e},{w}" if self._weighted else f"{e}")
+                     for e, w in adj])
             for ix, adj in enumerate(self._edges)
         ]
         with path.open("w") as ofile:
@@ -228,7 +234,8 @@ class LatticeGraph(Graph):
             nodes.sort(key=lambda x: x.get_id())
             self._rows = max([node.get_coordinates()[0] + 1 for node in nodes])
             self._cols = max([node.get_coordinates()[1] + 1 for node in nodes])
-            edges = [[adj.get_id() for adj in node.get_adjacent()] for node in nodes]
+            edges = [[adj.get_id() for adj in node.get_adjacent()]
+                     for node in nodes]
 
         super().__init__(nodes, edges, weighted=False)
 
@@ -251,7 +258,8 @@ class LatticeGraph(Graph):
         for line in lines:
             wc += line.count("%")
         if wc == 0:
-            raise ValueError(f"Can not interpret LatticeGraph in {path} - is your format correct?")
+            raise ValueError(
+                f"Can not interpret LatticeGraph in {path} - is your format correct?")
         lines = list(filter(lambda x: not re.match(r"^\s*$", x), lines))
         lines = [list(line.strip("\n")) for line in lines]
         rowcount = len(lines)
@@ -300,13 +308,16 @@ class LatticeGraph(Graph):
         # Now finish setting up the data
         self._rows = rowcount
         self._cols = colcount
-        self._nodes = sorted(list(node_dict.values()), key=lambda x: x.get_id())
-        self._edges = [[x for adj in node.get_adjacent()] for node in self._nodes]
+        self._nodes = sorted(list(node_dict.values()),
+                             key=lambda x: x.get_id())
+        self._edges = [[x for adj in node.get_adjacent()]
+                       for node in self._nodes]
 
     def to_file(self, path: Path) -> None:
         if type(path) == str:
             path = Path(path)
-        lattice = [["%" for _ in range(self._cols + 2)] for _ in range(self._rows + 2)]
+        lattice = [["%" for _ in range(self._cols + 2)]
+                   for _ in range(self._rows + 2)]
         for n in self._nodes:
             r, c = n.get_coordinates()
             lattice[r + 1][c + 1] = " "

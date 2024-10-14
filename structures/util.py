@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 import pickle
 
+
 class Hashable(ABC):
     """
     A special object that can be inherited to enforce objects to be hashable
@@ -35,12 +36,13 @@ class Hashable(ABC):
 Any other utilities can go below here.
 """
 
+
 def object_to_byte_array(obj: Any) -> list[bytes]:
     """
     This converts any object into a byte array. The byte array can then
     be iterated across to yield integers. This may be useful for hashing
     arbitrary objects.
-    
+
     Example:
     x = 1234
     x_bytes = object_to_byte_array(x)

@@ -11,6 +11,7 @@ from typing import Any
 import sys
 import hashlib
 
+
 def file_to_bytes(path: str) -> bytes:
     """
     Read a file into a byte array
@@ -19,12 +20,14 @@ def file_to_bytes(path: str) -> bytes:
         data = f.read()
     return data
 
+
 def bytes_to_file(path: str, data: bytes) -> None:
     """
     Write a sequence of bytes to a file
     """
     with open(path, 'wb') as f:
         f.write(data)
+
 
 def my_compressor(in_bytes: bytes) -> bytes:
     """
@@ -35,14 +38,16 @@ def my_compressor(in_bytes: bytes) -> bytes:
     # Implement me!
     pass
 
+
 def my_decompressor(compressed_bytes: bytes) -> bytes:
     """
     Your decompressor is given a compressed bytes object (from your own
     compressor) and must recover and return the original bytes.
     Once again, we've just used xz.
-    """ 
+    """
     # Implement me!
     pass
+
 
 def compress_file(in_path: str, out_path: str) -> None:
     """
@@ -50,9 +55,9 @@ def compress_file(in_path: str, out_path: str) -> None:
     """
     in_size = Path(in_path).stat().st_size
     in_data = file_to_bytes(in_path)
-   
+
     compressed = my_compressor(in_data)
-    
+
     bytes_to_file(out_path, compressed)
     out_size = Path(out_path).stat().st_size
 
@@ -63,16 +68,18 @@ def compress_file(in_path: str, out_path: str) -> None:
     print("Output Size:", out_size)
     print("Ratio:", out_size/in_size)
 
+
 def decompress_file(compressed_path: str, out_path: str) -> None:
     """
     Consume a compressed file from compressedpath, decompress it, and
     write it to outpath.
     """
     compressed_data = file_to_bytes(compressed_path)
-    
+
     decompressed = my_decompressor(compressed_data)
 
     bytes_to_file(out_path, decompressed)
+
 
 def recovery_check(in_path: str, compressed_path: str) -> bool:
 

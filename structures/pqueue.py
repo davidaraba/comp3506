@@ -8,6 +8,7 @@ from typing import Any
 from structures.entry import Entry
 from structures.dynamic_array import DynamicArray
 
+
 class PriorityQueue:
     """
     An implementation of the PriorityQueue ADT. We have used the implicit
@@ -20,7 +21,7 @@ class PriorityQueue:
     Values are called "data" and store the payload data of interest.
     We use the Entry types to store (k, v) pairs.
     """
-    
+
     def __init__(self):
         """
         Empty construction
@@ -32,8 +33,7 @@ class PriorityQueue:
         """
         Given index ix, return the index of the parent
         """
-        # return (ix) // 2
-        return(ix - 1) // 2 # Should be - 1 because of 0 base indexing 
+        return (ix - 1) // 2  # Should be - 1 because of 0 base indexing
 
     def insert(self, priority: int, data: Any) -> None:
         """
@@ -58,7 +58,7 @@ class PriorityQueue:
         self.insert(self._max_priority, data)
         self._max_priority += 1
 
-    def get_min_priority(self) -> Any: ##GOOD 
+    def get_min_priority(self) -> Any:  # GOOD
         """
         Return the priority of the min element
         """
@@ -72,8 +72,7 @@ class PriorityQueue:
         """
         if self.is_empty():
             return None
-        # return self._arr[0].get_key()
-        return self._arr[0].get_value() # Should be value not key 
+        return self._arr[0].get_value()
 
     def remove_min(self) -> Any:
         """
@@ -82,15 +81,16 @@ class PriorityQueue:
         """
         if self.is_empty():
             return None
-        result = self._arr[0] # Min is smallest eleement 
-        self._arr[0] = self._arr[self.get_size() - 1] # Swap min with last element (last element will be leaf with no child)
-        self._arr.remove_at(self.get_size() - 1) # Remove last element which is now the root 
+        result = self._arr[0]  # Min is smallest eleement
+        # Swap min with last element (last element will be leaf with no child)
+        self._arr[0] = self._arr[self.get_size() - 1]
+        # Remove last element which is now the root
+        self._arr.remove_at(self.get_size() - 1)
 
-        # cur = 1
         cur = 0
         while cur < self.get_size():
-            left = 2 * cur + 1 # +1
-            right = 2 * cur + 2 # +2
+            left = 2 * cur + 1
+            right = 2 * cur + 2
 
             smallest = cur
             if left < self.get_size() and self._arr[smallest].get_key() > self._arr[left].get_key():
@@ -127,9 +127,9 @@ class PriorityQueue:
         use the DynamicArray build_from_list function. You must use
         only O(1) extra space.
         """
-        
+
         self._arr = input_list
-                
+
         n = self._arr.get_size()
 
         for i in range(n // 2 - 1, -1, -1):
@@ -154,18 +154,18 @@ class PriorityQueue:
             self._heapify(i, 0)
 
         return self._arr
-    
+
     def _heapify(self, n: int, i: int):
-        smallest = i 
-        left = 2 * i + 1 
+        smallest = i
+        left = 2 * i + 1
         right = 2 * i + 2
 
         if left < n and self._arr[left].get_key() < self._arr[smallest].get_key():
             smallest = left
-        
+
         if right < n and self._arr[right].get_key() < self._arr[smallest].get_key():
             smallest = right
-        
+
         if smallest != i:
             self._arr[i], self._arr[smallest] = self._arr[smallest], self._arr[i]
             self._heapify(n, smallest)

@@ -23,6 +23,7 @@ from structures.entry import Entry
 from structures.dynamic_array import DynamicArray
 from structures.linked_list import DoublyLinkedList
 
+
 class Map:
     """
     An implementation of the Map ADT.
@@ -36,7 +37,7 @@ class Map:
         to initialise your map.
         """
         self._capacity = 1011
-        self._size = 0 
+        self._size = 0
         self._buckets = DynamicArray()
         self._buckets.allocate(self._capacity, None)
 
@@ -44,11 +45,12 @@ class Map:
         load_factor = self._size / self._capacity
         if load_factor > 0.7:
             self._resize()
-    
+
     def _resize(self) -> None:
         new_capacity = self._capacity * 2  # Double the capacity
         new_buckets = DynamicArray()
-        new_buckets.allocate(new_capacity, None)  # Allocate new array with None for lazy initialization
+        # Allocate new array with None for lazy initialization
+        new_buckets.allocate(new_capacity, None)
 
         # Rehash all entries in the old buckets
         for i in range(self._capacity):
@@ -64,15 +66,16 @@ class Map:
                         new_buckets.set_at(new_index, DoublyLinkedList())
 
                     # Insert the entry into the appropriate bucket
-                    new_bucket = new_buckets.get_at(new_index)  # Get the correct bucket
+                    new_bucket = new_buckets.get_at(
+                        new_index)  # Get the correct bucket
                     new_bucket.insert_to_back(entry)
-                    
+
                     current_node = current_node.get_next()
 
         # Update the map's capacity and buckets
         self._capacity = new_capacity
         self._buckets = new_buckets
- 
+
     def insert(self, entry: Entry) -> Any | None:
         """
         Associate value v with key k for efficient lookups. If k already exists
@@ -80,21 +83,21 @@ class Map:
         None otherwise. (We will not use None as a key or a value in our tests).
         Time complexity for full marks: O(1*)
         """
-        hash_value = entry.get_hash() 
+        hash_value = entry.get_hash()
         index = hash_value % self._capacity
-        
+
         if self._buckets.get_at(index) is None:
             self._buckets.set_at(index, DoublyLinkedList())
 
         bucket = self._buckets.get_at(index)
-        
+
         current_entry = bucket.find_and_return_element(entry)
 
         if current_entry:
             old_value = current_entry.get_value()
             current_entry.update_value(entry.get_value())
             return old_value
-        
+
         bucket.insert_to_back(entry)
         self._size += 1
         self._resize_if_needed()
@@ -127,12 +130,12 @@ class Map:
         Time complexity for full marks: O(1*)
         """
         hash_value = Entry(key, None).get_hash()
-        
+
         index = hash_value % self._capacity
 
         if self._buckets.get_at(index) is None:
-            return None 
-        
+            return None
+
         bucket = self._buckets.get_at(index)
         success = bucket.find_and_remove_element(Entry(key, None))
         if success:
@@ -149,18 +152,17 @@ class Map:
 
         if self._buckets.get_at(index) is None:
             return None
-        
+
         bucket = self._buckets.get_at(index)
 
         entry_to_find = Entry(key, None)
 
         found_element = bucket.find_and_return_element(entry_to_find)
-        
+
         if found_element:
             return found_element.get_value()
-        
+
         return None
-        
 
     def __getitem__(self, key: Any) -> Any | None:
         """
@@ -180,8 +182,8 @@ class Map:
         """
         Time complexity for full marks: O(1)
         """
-        return self._size == 0 
-    
+        return self._size == 0
+
     def iterate_over_entries(self):
         for i in range(self._capacity):
             bucket = self._buckets.get_at(i)
@@ -190,14 +192,15 @@ class Map:
                 while current_node is not None:
                     yield current_node.get_data()
                     current_node = current_node.get_next()
-                    
+
     def print_map(self) -> None:
         """
         Prints out all the key-value pairs in the map in array form and
         also prints out all the keys that map to the same index.
         """
         map_contents = []
-        index_key_map = [None] * self._capacity  # Create a list of None for each index
+        # Create a list of None for each index
+        index_key_map = [None] * self._capacity
 
         for i in range(self._capacity):
             bucket = self._buckets.get_at(i)
@@ -212,7 +215,7 @@ class Map:
                     # Initialize a DoublyLinkedList if None at this index
                     if index_key_map[i] is None:
                         index_key_map[i] = DoublyLinkedList()
-                    
+
                     # Insert the key into the list for this index
                     index_key_map[i].insert_to_back(key)
 

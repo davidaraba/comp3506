@@ -41,27 +41,27 @@ class BloomFilter:
         self._max_keys = max_keys
         self._fp = 0.01
         self._bits = self._calculate_num_bits(max_keys, self._fp)
-        self._num_hash_functions = self._calculate_num_hash_functions(self._bits, self._max_keys)
+        self._num_hash_functions = self._calculate_num_hash_functions(
+            self._bits, self._max_keys)
         self._capacity = self._data.allocate(self._bits)
         self._is_empty = True
-        
-            
+
     def _calculate_num_hash_functions(self, bits: int, keys: int) -> int:
         num_hashes = (bits / keys) * math.log(2)
         return math.ceil(num_hashes)
-    
+
     def _calculate_num_bits(self, keys, fp) -> int:
         num_bits = (-keys * math.log(fp)) / ((math.log(2)) ** 2)
         return math.ceil(num_bits)
-    
+
     def _hash_function(self, key_bytes: bytes, prime: int, mod: int) -> int:
         hash_value = 0
 
         for bytes in key_bytes:
             hash_value = (hash_value * prime + bytes) % mod
-        
+
         return hash_value
-    
+
     def _generate_k_hashes(self, key_bytes: bytes) -> list:
         """
         Use the Kirsch-Mitzenmacher optimization to generate k hash values
@@ -70,7 +70,7 @@ class BloomFilter:
 
         prime1 = 31
         prime2 = 37
-        mod = 10**9 + 7 
+        mod = 10**9 + 7
 
         # Generate two base hashes using polynomial hash with different primes
         h1 = self._hash_function(key_bytes, prime1, mod)
@@ -107,7 +107,7 @@ class BloomFilter:
         over k are set. False otherwise.
         Time complexity for full marks: O(1)
         """
-        
+
         hash_key = object_to_byte_array(key)
         hash_values = self._generate_k_hashes(hash_key)
 
@@ -138,7 +138,7 @@ class BloomFilter:
         Time complexity for full marks: O(1)
         """
         return self._data.get_size()
-    
+
     def print_filter(self) -> None:
         """
         A helper function that prints the current state of the BloomFilter's bits
@@ -146,5 +146,3 @@ class BloomFilter:
         """
         bits = [self._data.get_at(i) for i in range(self._bits)]
         print("BloomFilter Bits:", bits)
-
-

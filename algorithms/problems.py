@@ -37,7 +37,6 @@ import math
 from structures.huffman_node import HuffmanNode
 
 
-
 def maybe_maybe_maybe(database: list[str], query: list[str]) -> list[str]:
     """
     Task 3.1: Maybe Maybe Maybe
@@ -68,7 +67,7 @@ def maybe_maybe_maybe(database: list[str], query: list[str]) -> list[str]:
     You must pass each test in the given time limit and be under the given
     fp_rate to get the associated mark for that test.
     """
-    answer = [] 
+    answer = []
 
     max_keys = len(database)
 
@@ -76,12 +75,13 @@ def maybe_maybe_maybe(database: list[str], query: list[str]) -> list[str]:
 
     for item in database:
         database_bloom.insert(item)
-    
+
     for item in query:
         if database_bloom.contains(item):
             answer.append(item)
 
     return answer
+
 
 def dora(graph: Graph, start: int, symbol_sequence: str,
          ) -> tuple[BitVector, list[Entry]]:
@@ -132,27 +132,27 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
     queue = DoublyLinkedList()
     queue.insert_to_back(start)
     visited[start] = True
-    
+
     while queue.get_size() > 0:
         current_node_id = queue.remove_from_front()
         current_node = graph.get_node(current_node_id)
         current_symbol = current_node.get_data()
 
         count = gene_count.find(current_symbol)
-        
+
         if count is not None:
             gene_count.insert_kv(current_symbol, count + 1)
         else:
             gene_count.insert_kv(current_symbol, 1)
-        
+
         neighbours = graph.get_neighbours(current_node_id)
-        
+
         for neighbour in neighbours:
             neighbour_id = neighbour.get_id()
             if not visited[neighbour_id]:
                 queue.insert_to_back(neighbour_id)
-                visited[neighbour_id] =  True
-    
+                visited[neighbour_id] = True
+
     huffman_pq = PriorityQueue()
 
     for genes in gene_count.iterate_over_entries():
@@ -161,21 +161,22 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
 
         huffman_node = HuffmanNode(symbol, frequency)
         huffman_pq.insert(frequency, huffman_node)
-    
+
     if huffman_pq.is_empty():
         root = None
     else:
         while huffman_pq.get_size() > 1:
             left_node = huffman_pq.remove_min()
             right_node = huffman_pq.remove_min()
-            combined_frequency = left_node._frequency + right_node._frequency 
+            combined_frequency = left_node._frequency + right_node._frequency
             new_node = HuffmanNode(None, combined_frequency)
             new_node._left = left_node
             new_node._right = right_node
             huffman_pq.insert(combined_frequency, new_node)
         root = huffman_pq.remove_min()
-    
+
     codebook_map = Map()
+
     def generate_codes(node, current_code):
         if node is None:
             return
@@ -186,7 +187,7 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
             return
         generate_codes(node._left, current_code + '0')
         generate_codes(node._right, current_code + '1')
-    
+
     generate_codes(root, '')
 
     for symbol in symbol_sequence:
@@ -198,6 +199,7 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
             coded_sequence.append(bit)
 
     return (coded_sequence, codebook)
+
 
 def chain_reaction(compounds: list[Compound]) -> int:
     """
@@ -226,35 +228,35 @@ def chain_reaction(compounds: list[Compound]) -> int:
 
     def compounds_overlap(compound1: Compound, compound2: Compound) -> bool:
         radius_squared = compound1.get_radius() ** 2
-        x1,y1 = compound1.get_coordinates()
-        x2,y2 = compound2.get_coordinates()
+        x1, y1 = compound1.get_coordinates()
+        x2, y2 = compound2.get_coordinates()
         distance_squared = (x2 - x1) ** 2 + (y2 - y1) ** 2
-        
+
         return distance_squared <= radius_squared
 
     if not compounds:
         return -1
-    
-    maximal_compound_count = 0 
+
+    maximal_compound_count = 0
     maximal_compound_id = compounds[0].get_compound_id()
-    
+
     for i, compound in enumerate(compounds):
         queue = DynamicArray()
         queue.append(compound)
         visited = [False] * len(compounds)
-        visited[i] = True 
+        visited[i] = True
 
         local_impact_count = 1
 
         while not queue.is_empty():
             current_compound = queue.remove_at(0)
-            
+
             for j, neighbour in enumerate(compounds):
                 if not visited[j] and compounds_overlap(current_compound, neighbour):
                     visited[j] = True
                     queue.append(neighbour)
                     local_impact_count += 1
-        
+
         if local_impact_count > maximal_compound_count:
             maximal_compound_count = local_impact_count
             maximal_compound_id = compound.get_compound_id()
@@ -264,6 +266,7 @@ def chain_reaction(compounds: list[Compound]) -> int:
 
     return maximal_compound_id
 
+
 def labyrinth(offers: list[Offer]) -> tuple[int, int]:
     """
     Task 3.4: Labyrinth
@@ -272,7 +275,7 @@ def labyrinth(offers: list[Offer]) -> tuple[int, int]:
     definition of an Offer. In short, an Offer stores n (number of nodes),
     m (number of edges), and k (diameter) of the given Labyrinth. Each
     Offer also has an associated cost, and a unique offer identifier.
-    
+
     Return the offer identifier and the associated cost for the cheapest
     labyrinth that can be constructed from the list of offers. If there
     are ties, return the one with the smallest identifier. 
@@ -298,17 +301,17 @@ def labyrinth(offers: list[Offer]) -> tuple[int, int]:
             0 <= k <= 10^42
 
     """
-    
+
     def valid_offer(offer: Offer) -> bool:
         n = offer.get_num_nodes()
         m = offer.get_num_edges()
         k = offer.get_diameter()
 
-        if (m >= n - 1 and m < (n * (n - 1)) /2 and k > n - m):
+        if (m >= n - 1 and m < (n * (n - 1)) / 2 and k > n - m):
             return True
-    
+
         return False
-            
+
     best_offer_id = -1
     best_offer_cost = float('inf')
 
@@ -320,8 +323,6 @@ def labyrinth(offers: list[Offer]) -> tuple[int, int]:
             elif offer.get_cost() == best_offer_cost:
                 if offer.get_offer_id() < best_offer_id:
                     best_offer_id = offer.get_offer_id()
-    
+
     # print(best_offer_id, best_offer_cost)
     return (best_offer_id, best_offer_cost)
-
-

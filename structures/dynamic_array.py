@@ -8,6 +8,7 @@ from typing import Any
 from collections.abc import Iterator
 from random import randint
 
+
 class DynamicArray:
     """
     A simplified *append only* dynamic array. We have removed some of the
@@ -107,7 +108,7 @@ class DynamicArray:
         for idx in range(self._size):
             if self._data[idx] == element:
                 self.remove_at(idx)
-                return 
+                return
 
     def remove_at(self, index: int) -> Any | None:
         """
@@ -189,7 +190,6 @@ class DynamicArray:
             # so back out at this point
             if left >= right:
                 return right
-            
+
             # Otherwise, we swap the elements and continue
             self._data[left], self._data[right] = self._data[right], self._data[left]
-

@@ -8,6 +8,7 @@ from typing import Any
 from structures.util import Hashable
 from structures.util import object_to_byte_array
 
+
 class Entry(Hashable):
     """
     Implements a simple type that holds keys and values. Extends the Hashable
@@ -50,7 +51,7 @@ class Entry(Hashable):
         than other. Relies on keys having __lt__ implemented.
         """
         return self.get_key() < other.get_key()
-    
+
     def __str__(self) -> str:
         """
         Return a string representation of the Entry object, showing key and value.
@@ -82,23 +83,25 @@ class Entry(Hashable):
         """
         key_value = object_to_byte_array(self._key)
         prime = 71
-        mod = 10**9 + 7 
+        mod = 10**9 + 7
 
         return self._hash_function(key_value, prime, mod)
-    
+
     def _hash_function(self, key_bytes: bytes, prime: int, mod: int) -> int:
         hash_value = 0
 
         for bytes in key_bytes:
             hash_value = (hash_value * prime + bytes) % mod
-        
+
         return hash_value
-    
+
+
 class Compound:
     """
     Implements the Compound Type used in Task 3.3. Please do not modify this
     class.
     """
+
     def __init__(self, x: int, y: int, r: float, cid: int) -> None:
         self._x = x
         self._y = y
@@ -115,17 +118,18 @@ class Compound:
         return self._cid
 
     def __str__(self) -> str:
-        return ("x = " + str(self._x) + 
+        return ("x = " + str(self._x) +
                 ", y = " + str(self._y) +
-                ", r = " + str(self._r) + 
+                ", r = " + str(self._r) +
                 ", cid = " + str(self._cid))
- 
+
 
 class Offer:
     """
     Implements the Offer Type used in Task 3.4. Please do not modify this
     class.
     """
+
     def __init__(self, n: int, m: int, k: int, cost: int, oid: int) -> None:
         self._n = n
         self._m = m
@@ -143,6 +147,7 @@ class Offer:
         return self._k
 
     """ Friendlier names """
+
     def get_num_nodes(self) -> int:
         return self._n
 
@@ -159,9 +164,8 @@ class Offer:
         return self._oid
 
     def __str__(self) -> str:
-        return ("n = " + str(self._n) + 
+        return ("n = " + str(self._n) +
                 ", m = " + str(self._m) +
-                ", k = " + str(self._k) + 
-                ", cost = " + str(self._cost) + 
+                ", k = " + str(self._k) +
+                ", cost = " + str(self._cost) +
                 ", oid = " + str(self._oid))
- 
