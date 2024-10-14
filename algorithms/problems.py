@@ -126,12 +126,12 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
     """
     codebook = []
 
-    visited = Map()
+    visited = [False] * len(graph._nodes)
     gene_count = Map()
 
     queue = DoublyLinkedList()
     queue.insert_to_back(start)
-    visited.insert_kv(start, True)
+    visited[start] = True
     
     while queue.get_size() > 0:
         current_node_id = queue.remove_from_front()
@@ -143,15 +143,15 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
         if count is not None:
             gene_count.insert_kv(current_symbol, count + 1)
         else:
-            gene_count.insert(current_symbol, 1)
+            gene_count.insert_kv(current_symbol, 1)
         
         neighbours = graph.get_neighbours(current_node_id)
         
         for neighbour in neighbours:
             neighbour_id = neighbour.get_id()
-            if not visited.find(neighbour_id):
+            if not visited[neighbour_id]:
                 queue.insert_to_back(neighbour_id)
-                visited.insert_kv(neighbour_id, True)
+                visited[neighbour_id] =  True
     
     huffman_pq = PriorityQueue()
 
@@ -174,6 +174,28 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
             new_node._right = right_node
             huffman_pq.insert(combined_frequency, new_node)
         root = huffman_pq.remove_min()
+    
+    codebook_map = Map()
+    def generate_codes(node, current_code):
+        if node is None:
+            return
+        if node._symbol is not None:
+            code_entry = Entry(node._symbol, current_code)
+            codebook.append(code_entry)
+            codebook_map.insert_kv(node._symbol, current_code)
+            return
+        generate_codes(node._left, current_code + '0')
+        generate_codes(node._right, current_code + '1')
+    
+    generate_codes(root, '')
+
+    for symbol in symbol_sequence:
+        code = codebook_map.find(symbol)
+        if code is None:
+            continue
+        for char_bit in code:
+            bit = int(char_bit)
+            coded_sequence.append(bit)
 
     return (coded_sequence, codebook)
 
