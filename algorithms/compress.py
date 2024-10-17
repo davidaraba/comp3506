@@ -10,6 +10,9 @@ from pathlib import Path
 from typing import Any
 import sys
 import hashlib
+import heapq
+from structures.huffman_node import HuffmanNode
+from structures.bit_vector import BitVector
 
 
 def file_to_bytes(path: str) -> bytes:
@@ -28,6 +31,45 @@ def bytes_to_file(path: str, data: bytes) -> None:
     with open(path, 'wb') as f:
         f.write(data)
 
+def build_frequency_table(data: bytes) -> dict:
+    frequency = {}
+    for byte in data:
+        if byte in frequency:
+            frequency[byte] += 1
+        else:
+            frequency[byte] = 1
+    return frequency
+
+def build_huffman_tree(frequency):
+    priority_queue = [HuffmanNode(symbol=char, frequency=freq) for char, freq in frequency.items()]
+    heapq.heapify(priority_queue)
+    while len(priority_queue) > 1:
+        left_child = heapq.heappop(priority_queue)
+        right_child = heapq.heappop(priority_queue)
+        merged_frequency = left_child._frequency + right_child._frequency
+        merged_node = HuffmanNode(symbol=None, frequency=merged_frequency)
+        merged_node._left = left_child
+        merged_node._right = right_child
+        heapq.heappush(priority_queue, merged_node)
+    return priority_queue[0]
+
+def generate_huffman_codes(node, path="", codebook={}):
+    if node is not None:
+        if node._symbol is not None:
+            codebook[node._symbol] = path
+        else:
+            generate_huffman_codes(node._left, path + "0", codebook)
+            generate_huffman_codes(node._right, path + "1", codebook)
+    return codebook
+
+def huffman_encode(data: bytes, codebook: dict) -> BitVector:
+    encoded_data = BitVector()
+    for byte in data:
+        code = codebook[byte]
+        for bit in code:
+            encoded_data.append(int(bit))
+    return encoded_data
+
 
 def my_compressor(in_bytes: bytes) -> bytes:
     """
@@ -35,7 +77,13 @@ def my_compressor(in_bytes: bytes) -> bytes:
     version of the bytes object. We have put xz here just as a 
     baseline general purpose compression tool.
     """
-    # Implement me!
+    frequency_table = build_frequency_table(in_bytes)
+    huffman_tree = build_huffman_tree(frequency_table)
+    codebook = generate_huffman_codes(huffman_tree)
+    encoded_data = huffman_encode(in_bytes, codebook)
+    #NEED TO DO SOMETHING WITH SERIALISATION?????
+    # serialized_codebook = serialize_codebook(codebook)
+    # return serialized_codebook + encoded_data.to_byte_arr()
     pass
 
 
@@ -91,7 +139,6 @@ def recovery_check(in_path: str, compressed_path: str) -> bool:
     recovered_checksum = hashlib.md5(recovered).hexdigest()
 
     assert expected_checksum == recovered_checksum, "Uh oh!"
-
 
 if __name__ == "__main__":
     compress_file(sys.argv[1], sys.argv[2])

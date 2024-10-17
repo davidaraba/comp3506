@@ -7,4 +7,4 @@ class HuffmanNode:
 
     def __lt__(self, other):
         # This will help the PriorityQueue to compare two HuffmanNodes by frequency
-        return self.frequency < other.frequency
+        return self._frequency < other._frequency
