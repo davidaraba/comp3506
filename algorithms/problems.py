@@ -90,7 +90,7 @@ def dora(graph: Graph, start: int, symbol_sequence: str,
     a single symbol in the node's data field.
     @start@ is the integer identifier of the start vertex.
     @symbol_sequence@ is the input sequence of symbols, L, with length n.
-    All symbols are guaranteed to be found in G. 
+    All symbols are guaranteed to be found in G.
 
     Return a BitVector encoding symbol_sequence via a minimum redundancy code.
     The BitVector should be read from index 0 upwards (so, the first symbol is
@@ -276,7 +276,7 @@ def labyrinth(offers: list[Offer]) -> tuple[int, int]:
 
     Return the offer identifier and the associated cost for the cheapest
     labyrinth that can be constructed from the list of offers. If there
-    are ties, return the one with the smallest identifier. 
+    are ties, return the one with the smallest identifier.
     You are guaranteed that all offer ids are distinct.
 
     Limitations:
