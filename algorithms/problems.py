@@ -239,20 +239,20 @@ def chain_reaction(compounds: list[Compound]) -> int:
     maximal_compound_id = compounds[0].get_compound_id()
 
     for i, compound in enumerate(compounds):
-        queue = DynamicArray()
-        queue.append(compound)
+        queue = DoublyLinkedList()
+        queue.insert_to_back(compound)
         visited = [False] * len(compounds)
         visited[i] = True
 
         local_impact_count = 1
 
-        while not queue.is_empty():
-            current_compound = queue.remove_at(0)
+        while queue.get_size() > 0:
+            current_compound = queue.remove_from_front()
 
             for j, neighbour in enumerate(compounds):
                 if not visited[j] and compounds_overlap(current_compound, neighbour):
                     visited[j] = True
-                    queue.append(neighbour)
+                    queue.insert_to_back(neighbour)
                     local_impact_count += 1
 
         if local_impact_count > maximal_compound_count:
