@@ -137,8 +137,8 @@ class Map:
             return None
 
         bucket = self._buckets.get_at(index)
-        success = bucket.find_and_remove_element(Entry(key, None))
-        if success:
+        entry_to_remove = bucket.find_and_remove_element(Entry(key, None))
+        if entry_to_remove:
             self._size -= 1
 
     def find(self, key: Any) -> Any | None:

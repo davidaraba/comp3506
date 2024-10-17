@@ -10,6 +10,7 @@ from structures.entry import Entry
 from structures.dynamic_array import DynamicArray
 from structures.graph import Graph, LatticeGraph
 from structures.pqueue import PriorityQueue
+from structures.linked_list import DoublyLinkedList
 
 
 def bfs_traversal(
@@ -35,9 +36,9 @@ def bfs_traversal(
     # Stores the path from the origin to the goal
     path = DynamicArray()
     # Queue
-    queue = DynamicArray()
-    # Append origin as first thing that will be visitited
-    queue.append(origin)
+    queue = DoublyLinkedList()
+    # Enqueue origin as the first node to be visited
+    queue.insert_to_back(origin)
 
     visited = DynamicArray()
 
@@ -49,8 +50,7 @@ def bfs_traversal(
 
     visited[origin] = True
     while queue.get_size() > 0:
-        current_node = queue[0]
-        queue.remove_at(0)
+        current_node = queue.remove_from_front()
 
         visited_order.append(current_node)
 
@@ -70,7 +70,7 @@ def bfs_traversal(
         for neighbour in current_node_neighbours:
             neighbour_id = neighbour.get_id()
             if not visited[neighbour_id]:
-                queue.append(neighbour_id)
+                queue.insert_to_back(neighbour_id)
                 visited[neighbour_id] = True
                 parent[neighbour_id] = current_node
 
@@ -138,7 +138,6 @@ def dijkstra_traversal(graph: Graph, origin: int) -> DynamicArray:
         if distances[node_id] != float('inf'):
             valid_locations.append(
                 Entry(key=node_id, value=distances[node_id]))
-            # valid_locations.append(Entry(key = current_distance, value= current_node))
 
     # Return the DynamicArray containing Entry types
     return valid_locations

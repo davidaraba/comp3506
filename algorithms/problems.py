@@ -32,8 +32,6 @@ from structures.graph import Graph, LatticeGraph
 from structures.map import Map
 from structures.pqueue import PriorityQueue
 from structures.bloom_filter import BloomFilter
-from structures.util import Hashable
-import math
 from structures.huffman_node import HuffmanNode
 
 
