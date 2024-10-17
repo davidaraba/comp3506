@@ -11,6 +11,7 @@ from structures.dynamic_array import DynamicArray
 from structures.graph import Graph, LatticeGraph
 from structures.pqueue import PriorityQueue
 from structures.linked_list import DoublyLinkedList
+from structures.bit_vector import BitVector
 
 
 def bfs_traversal(
@@ -40,15 +41,15 @@ def bfs_traversal(
     # Enqueue origin as the first node to be visited
     queue.insert_to_back(origin)
 
-    visited = DynamicArray()
+    visited = BitVector()
 
     num_vertices = len(graph._nodes)
+    visited.allocate(num_vertices)
 
-    visited.allocate(num_vertices, False)
     parent = DynamicArray()
     parent.allocate(num_vertices, None)
 
-    visited[origin] = True
+    visited.set_at(origin)
     while queue.get_size() > 0:
         current_node = queue.remove_from_front()
 
@@ -69,9 +70,9 @@ def bfs_traversal(
 
         for neighbour in current_node_neighbours:
             neighbour_id = neighbour.get_id()
-            if not visited[neighbour_id]:
+            if visited.get_at(neighbour_id) == 0:
                 queue.insert_to_back(neighbour_id)
-                visited[neighbour_id] = True
+                visited.set_at(neighbour_id)
                 parent[neighbour_id] = current_node
 
     # Return the path and the visited nodes list
@@ -109,19 +110,19 @@ def dijkstra_traversal(graph: Graph, origin: int) -> DynamicArray:
     distances[origin] = 0  # map maybe
 
     # Will keep track of what edges visited
-    visited = DynamicArray()
-    # Initially false
-    visited.allocate(num_vertices, False)
+    visited = BitVector()
+    # Allocate bits
+    visited.allocate(num_vertices)
 
     while not queue.is_empty():
 
         current_node = queue.get_min_value()
         queue.remove_min()
 
-        if visited[current_node]:
+        if visited.get_at(current_node) == 1:
             continue
 
-        visited[current_node] = True
+        visited.set_at(current_node)
 
         current_node_neighbour = graph.get_neighbours(current_node)
 
@@ -172,14 +173,14 @@ def dfs_traversal(
     # Append origin to begin DFS
     stack.append(origin)
 
-    visited = DynamicArray()
+    visited = BitVector()
 
     num_vertices = len(graph._nodes)
-    visited.allocate(num_vertices, False)
+    visited.allocate(num_vertices)
     parent = DynamicArray()
     parent.allocate(num_vertices, None)
 
-    visited[origin] = True
+    visited.set_at(origin)
 
     while stack.get_size() > 0:
         current_node = stack[stack.get_size() - 1]
@@ -202,9 +203,9 @@ def dfs_traversal(
 
         for neighbour in current_node_neighbours:
             neighbour_id = neighbour.get_id()
-            if not visited[neighbour_id]:
+            if visited.get_at(neighbour_id) == 0:
                 stack.append(neighbour_id)
-                visited[neighbour_id] = True
+                visited.set_at(neighbour_id)
                 parent[neighbour_id] = current_node
 
     # Return the path and the visited nodes list
