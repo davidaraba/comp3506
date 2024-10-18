@@ -16,3 +16,9 @@ chatGPT: To implement the `parent` array in BFS, initialize it with `None` for a
 
 The "def _generate_k_hashes(self, key_bytes: bytes) -> list:" in the bloom filter clasa was adapted from: https://stackoverflow.com/questions/70963247/bloom-filters-with-the-kirsch-mitzenmacher-optimization. 
 I learned about Kirsch Mitzenmacher's optimisation technique from here and then implmeneted the same thing in my bloom filter. 
+
+The huffman enconding algorithim used in the Dora/compression question (particularly the generate nodes function) was inspired/adapted from: https://www.geeksforgeeks.org/huffman-coding-in-python/. 
+
+The following websites were used to help with the serialisation & deserialisaiton aspect of the compress challenge:
+       1. https://www.geeksforgeeks.org/serialize-deserialize-binary-tree/
+       2. https://docs.python.org/3/library/struct.html
