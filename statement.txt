@@ -1,4 +1,3 @@
-
 chatGPT was used to help with the resizing function in the map class. 
 
 David: I'm stuck with rehashing a map when it's full. I'm stuck on the part where I have to rehash the entries to the new buckets. Can you explain the general idea?
@@ -22,3 +21,278 @@ The huffman enconding algorithim used in the Dora/compression question (particul
 The following websites were used to help with the serialisation & deserialisaiton aspect of the compress challenge:
        1. https://www.geeksforgeeks.org/serialize-deserialize-binary-tree/
        2. https://docs.python.org/3/library/struct.html
+
+ 
+ David: Hey, I've been working on implementing Huffman compression in Python. I wrote most of the code, including functions to build the frequency table, construct the Huffman tree, generate Huffman codes, and encode the data. 
+ I also have functions to compress and decompress files, and to check for data recovery. However, I'm stuck on implementing serialiisation/deserialisaiton (made function serialise_codebook and deserialise_codebook). Could you help me understand how to 
+ implement these? Here is the code I have so far: 
+ """
+Skeleton for COMP3506/7505 A2, S2, 2024
+The University of Queensland
+Joel Mackenzie and Vladimir Morozov
+
+Compression Utilities for Task 4.
+"""
+
+from pathlib import Path
+from typing import Any, Tuple
+import sys
+import hashlib
+import heapq
+from structures.huffman_node import HuffmanNode
+from structures.bit_vector import BitVector
+
+
+def file_to_bytes(path: str) -> bytes:
+    """
+    Read a file into a byte array
+    """
+    with open(path, 'rb') as f:
+        data = f.read()
+    return data
+
+
+def bytes_to_file(path: str, data: bytes) -> None:
+    """
+    Write a sequence of bytes to a file
+    """
+    with open(path, 'wb') as f:
+        f.write(data)
+
+
+def build_frequency_table(data: bytes) -> dict:
+    frequency = {}
+    for byte in data:
+        if byte in frequency:
+            frequency[byte] += 1
+        else:
+            frequency[byte] = 1
+    return frequency
+
+
+def build_huffman_tree(frequency):
+    priority_queue = [HuffmanNode(symbol=char, frequency=freq)
+                      for char, freq in frequency.items()]
+    heapq.heapify(priority_queue)
+    while len(priority_queue) > 1:
+        left_child = heapq.heappop(priority_queue)
+        right_child = heapq.heappop(priority_queue)
+        merged_frequency = left_child._frequency + right_child._frequency
+        merged_node = HuffmanNode(symbol=None, frequency=merged_frequency)
+        merged_node._left = left_child
+        merged_node._right = right_child
+        heapq.heappush(priority_queue, merged_node)
+    return priority_queue[0]
+
+
+def generate_huffman_codes(node, path="", codebook={}):
+    if node is not None:
+        if node._symbol is not None:
+            codebook[node._symbol] = path
+        else:
+            generate_huffman_codes(node._left, path + "0", codebook)
+            generate_huffman_codes(node._right, path + "1", codebook)
+    return codebook
+
+
+def huffman_encode(data: bytes, codebook: dict) -> BitVector:
+    encoded_data = BitVector()
+    for byte in data:
+        code = codebook[byte]
+        for bit in code:
+            encoded_data.append(int(bit))
+    return encoded_data
+
+def my_compressor(in_bytes: bytes) -> bytes:
+    """
+    Your compressor takes a bytes object and returns a compressed
+    version of the bytes object.
+    """
+    frequency_table = build_frequency_table(in_bytes)
+    huffman_tree = build_huffman_tree(frequency_table)
+    codebook = generate_huffman_codes(huffman_tree)
+    encoded_data = huffman_encode(in_bytes, codebook)
+    total_bits = encoded_data.get_size()
+
+
+def my_decompressor(compressed_bytes: bytes) -> bytes:
+    """
+    Your decompressor is given a compressed bytes object (from your own
+    compressor) and must recover and return the original bytes.
+    """
+    
+
+
+def compress_file(in_path: str, out_path: str) -> None:
+    """
+    Consume a file from in_path, compress it, and write it to out_path.
+    """
+    in_size = Path(in_path).stat().st_size
+    in_data = file_to_bytes(in_path)
+
+    compressed = my_compressor(in_data)
+
+    bytes_to_file(out_path, compressed)
+    out_size = Path(out_path).stat().st_size
+
+    print("Compression Benchmark...")
+    print("Input File:", in_path)
+    print("Input Size:", in_size)
+    print("Output File:", out_path)
+    print("Output Size:", out_size)
+    print("Ratio:", out_size / in_size)
+
+
+def decompress_file(compressed_path: str, out_path: str) -> None:
+    """
+    Consume a compressed file from compressed_path, decompress it, and
+    write it to out_path.
+    """
+    compressed_data = file_to_bytes(compressed_path)
+
+    decompressed = my_decompressor(compressed_data)
+
+    bytes_to_file(out_path, decompressed)
+
+
+def recovery_check(in_path: str, compressed_path: str) -> bool:
+    original = file_to_bytes(in_path)
+    expected_checksum = hashlib.md5(original).hexdigest()
+
+    decompress_file(compressed_path, "tmp")
+    recovered = file_to_bytes("tmp")
+    recovered_checksum = hashlib.md5(recovered).hexdigest()
+
+    assert expected_checksum == recovered_checksum, "Uh oh!"
+
+
+if __name__ == "__main__":
+    compress_file(sys.argv[1], sys.argv[2])
+    recovery_check(sys.argv[1], sys.argv[2])
+
+
+chatGPT: Of course! I'd be happy to help you with the serialise_codebook and deserialise_codebook functions. Let's go through how you can implement them step by step.
+
+Implementing serialise_codebook
+The goal of the serialise_codebook function is to convert your Huffman codebook into a bytes object that can be stored or transmitted along with the compressed data. This way, the decompressor can reconstruct the codebook and correctly decode the data.
+
+Here's how you can approach it:
+
+Decide on a Format:
+You need a consistent format to store the codebook entries.
+For each symbol and its code, you can store:
+The symbol itself (as a byte).
+The length of its code (so you know how many bits to read).
+The code represented in bytes.
+Write the Number of Entries:
+Start by writing the number of entries in the codebook. You can use 2 bytes to store this.
+Serialize Each Entry:
+For each symbol-code pair in the codebook:
+Symbol (1 byte): Write the symbol as a single byte.
+Code Length (2 bytes): Write the length of the code.
+Code Bytes: Convert the code (a string of '0's and '1's) into an integer, and then to bytes. The number of bytes needed is (code_length + 7) // 8.
+Include Total Bits:
+After serializing all entries, write the total number of bits in the encoded data (4 bytes). This helps the decompressor know when to stop reading bits.
+
+Here's the pseudocode for serialise_codebook:
+Function serialise_codebook(codebook, total_bits)
+
+Inputs:
+codebook: A dictionary mapping symbols to their Huffman codes (bit strings).
+total_bits: An integer representing the total number of bits in the encoded data.
+Output:
+A bytes object containing the serialized codebook and total bits.
+Procedure:
+
+Initialize an empty byte array serialised.
+Compute the number of entries in the codebook:
+num_entries ← length of codebook.
+Append num_entries to serialised:
+Convert num_entries to a 2-byte big-endian integer.
+Append this to serialised.
+For each (symbol, code) pair in codebook:
+Append the symbol to serialised:
+Convert symbol to a single byte.
+Append this byte to serialised.
+Compute the length of the code:
+code_length ← length of code (number of bits).
+Append code_length to serialised:
+Convert code_length to a 2-byte big-endian integer.
+Append this to serialised.
+Convert the code string to an integer:
+code_int ← integer value of the binary string code.
+Compute the number of bytes needed to store the code:
+num_code_bytes ← integer division of (code_length + 7) by 8.
+Convert code_int to bytes:
+Represent code_int as a big-endian integer using num_code_bytes bytes.
+Append the code bytes to serialised.
+Append total_bits to serialised:
+Convert total_bits to a 4-byte big-endian integer.
+Append this to serialised.
+Return serialised converted to an immutable bytes object.
+
+Implementing deserialise_codebook
+The deserialise_codebook function reads the bytes produced by serialise_codebook and reconstructs the codebook and total bits count.
+
+Here's how you can implement it:
+
+Read the Number of Entries:
+Read the first 2 bytes to get the number of entries in the codebook.
+Read Each Entry:
+For each entry:
+Symbol (1 byte): Read the symbol.
+Code Length (2 bytes): Read the length of the code.
+Code Bytes: Calculate the number of bytes needed for the code using (code_length + 7) // 8, then read those bytes.
+Code String: Convert the code bytes back into a bit string.
+Read Total Bits:
+After all entries are read, read the next 4 bytes to get the total number of bits in the encoded data.
+Here's the code for deserialise_codebook:
+
+Here's the pseudocode:
+Function deserialise_codebook(data)
+
+Input:
+data: A bytes object containing the serialized codebook and total bits.
+Outputs:
+codebook: A dictionary mapping codes (bit strings) to their corresponding symbols.
+total_bits: An integer representing the total number of bits in the encoded data.
+offset: An integer indicating the position in data where the encoded data begins.
+Procedure:
+
+Initialize:
+offset ← 0
+An empty dictionary codebook.
+Read the number of entries:
+Extract 2 bytes from data starting at offset.
+num_entries ← integer value of these bytes (big-endian).
+offset ← offset + 2
+For each entry from 1 to num_entries:
+Read the symbol:
+Extract 1 byte from data at offset.
+symbol ← value of this byte.
+offset ← offset + 1
+Read the code_length:
+Extract 2 bytes from data starting at offset.
+code_length ← integer value of these bytes (big-endian).
+offset ← offset + 2
+Compute the number of bytes the code occupies:
+num_code_bytes ← integer division of (code_length + 7) by 8.
+Read the code_bytes:
+Extract num_code_bytes from data starting at offset.
+offset ← offset + num_code_bytes
+Convert code_bytes to an integer:
+code_int ← integer value of code_bytes (big-endian).
+Convert code_int to a binary string code:
+code ← binary representation of code_int, padded with leading zeros to ensure the length is code_length.
+Add the entry to codebook:
+Map code to symbol in codebook.
+Read the total_bits:
+Extract 4 bytes from data starting at offset.
+total_bits ← integer value of these bytes (big-endian).
+offset ← offset + 4
+Return:
+The reconstructed codebook.
+The total_bits.
+The updated offset.
+
+*SORRY FOR THE FORMAT* 
